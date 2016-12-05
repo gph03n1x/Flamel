@@ -1,0 +1,12 @@
+# Node Heuristic
+A 20.3
+B 10
+C 14
+D 27
+E 0
+# FirstNode to and from  SecondNode cost
+C A 20.667
+E B 32.4
+E C 22
+D A 22
+B D 22
