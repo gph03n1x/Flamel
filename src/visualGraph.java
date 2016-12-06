@@ -62,7 +62,8 @@ public class visualGraph extends Canvas {
 	}
 	
 	public void constructGraph(){
-		
+		visualNodes.clear();
+		visualEdges.clear();
 		int count = 1;
 		for (String name: graph.graph.keySet()){
 			visualNode currentNode = new visualNode();
