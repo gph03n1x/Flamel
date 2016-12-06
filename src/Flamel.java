@@ -1,43 +1,73 @@
-import java.awt.Frame;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.util.*;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
 
 public class Flamel {
 	public static Frame framePanel;
 	
 	public static void main(String args[]) {
 		visualGraph canvasPanel = new visualGraph();
-		framePanel = new Frame(); 
-		framePanel.setSize(600, 600); 
-		framePanel.add(canvasPanel); 
+		
+		DefaultComboBoxModel<String> startNodesList = new DefaultComboBoxModel<String>();
+		DefaultComboBoxModel<String> endNodesList = new DefaultComboBoxModel<String>();
+		JComboBox<String> startPoint = new JComboBox<String>(startNodesList);
+		JComboBox<String> endPoint = new JComboBox<String>(endNodesList);
+		JFileChooser fileDialog = new JFileChooser("graphs/");
+	    JButton showFileDialogButton = new JButton("Open File");
+	    JButton updateGraph = new JButton("Update Graph");
+	    
+	    showFileDialogButton.addActionListener(new ActionListener() {
+	    	@Override
+	    	public void actionPerformed(ActionEvent e) {
+	    		int returnVal = fileDialog.showOpenDialog(framePanel);
+	    		if (returnVal == JFileChooser.APPROVE_OPTION) {
+	    			canvasPanel.readGraph(fileDialog.getSelectedFile().getPath());
+	    			canvasPanel.constructGraph();
+	    			startNodesList.removeAllElements();
+	    			endNodesList.removeAllElements();
+	    			for (String nodeLabel :canvasPanel.graph.graph.keySet()) {
+	    				startNodesList.addElement(nodeLabel);
+		    			endNodesList.addElement(nodeLabel);
+	    			}
+	    			
+	            }   
+	    	}
+	    });
+	    updateGraph.addActionListener(new ActionListener() {
+	    	@Override
+	    	public void actionPerformed(ActionEvent e) {
+	    		canvasPanel.readGraph(fileDialog.getSelectedFile().getPath());
+	    		canvasPanel.doSearch(startPoint.getSelectedItem().toString(), endPoint.getSelectedItem().toString());
+	    		canvasPanel.constructGraph();
+	    		
+	    		canvasPanel.repaint();
+	    	}
+	    });
+	    
+	    JPanel controlPanel = new JPanel();
+	    GridLayout layout = new GridLayout(9,3);
+	    controlPanel.setLayout(layout);
+	    layout.setHgap(10);
+	    layout.setVgap(10);
+	    controlPanel.add(startPoint);
+	    controlPanel.add(endPoint);
+	    controlPanel.add(showFileDialogButton);
+	    controlPanel.add(updateGraph);
+	    
+	    
+	    
+	    framePanel = new Frame();
+		framePanel.setSize(600, 600);
+		framePanel.setLayout(new GridLayout(0,2));
+		framePanel.add(controlPanel);
+		framePanel.add(canvasPanel);
 		framePanel.setVisible(true); 
 		framePanel.addWindowListener(new WindowAdapter(){
 			public void windowClosing(WindowEvent we){
 				System.exit(0);
 			}
 		});
-		
-		Scanner scan = new Scanner(System.in);
-		System.out.print("Give the path to your graph file>");
-		String graphFile = scan.next();
-		System.out.print("Give the starting point>");
-		String start = scan.next();
-		System.out.print("Give the ending point>");
-		String end = scan.next();
-		graphFile = "graphs/graph.txt";
-		start = "A";
-		end = "E";
-		graphParser graph = new graphParser();
-		graph.readGraph(graphFile);
-		
-		Astar astar = new Astar();
-		astar.setGraph(graph.graph);
-		astar.setHeuristics(graph.heuristic);
-		astar.setOptions(true, true);
-		astar.lookForPath(start, end);
 
-		scan.close();
 		
 
 	}

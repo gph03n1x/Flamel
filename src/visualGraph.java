@@ -41,29 +41,35 @@ public class visualGraph extends Canvas {
 	private static final long serialVersionUID = 2084845050702797718L;
 	public static HashMap<Node, visualNode> visualNodes = new HashMap<Node, visualNode>();
 	public static ArrayList<visualEdge> visualEdges = new ArrayList<visualEdge>();
-	
+	public graphParser graph;
+	//public String currentFile;
 	
 	public visualGraph(){ 
 		setSize(200, 200); 
 		setBackground(Color.white); 
-		
-		
-		graphParser graph = new graphParser();
-		graph.readGraph("graphs/graph2.txt");
-		
+	} 
+	
+	public void doSearch(String start, String end) {
 		Astar astar = new Astar();
 		astar.setGraph(graph.graph);
 		astar.setHeuristics(graph.heuristic);
 		astar.setOptions(true, true);
-		astar.lookForPath("Oradea", "Hirsova");
-
-
+		astar.lookForPath(start, end);
+	}
+	public void readGraph(String File){
+		graph = new graphParser();
+		graph.readGraph(File);
+	}
+	
+	public void constructGraph(){
+		
 		int count = 1;
 		for (String name: graph.graph.keySet()){
 			visualNode currentNode = new visualNode();
 			currentNode.actualNode = graph.graph.get(name);
 			currentNode.nodeNumberId = count;
 			currentNode.nodeCount = graph.graph.size();
+			// There is a bug somewhere around here.
 			currentNode.nodeColor = graph.graph.get(name).nodeColor;
 			visualNodes.put(graph.graph.get(name), currentNode);
 	        count +=1;
@@ -84,11 +90,7 @@ public class visualGraph extends Canvas {
 	        }
 	        
 		}
-		
-		
-		
-		
-	} 
+	}
 	
 	public void paint(Graphics g){ 
 		double offsetX = this.getWidth()/2;
