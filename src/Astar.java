@@ -26,7 +26,7 @@ public class Astar extends pathFinding{
 		Queue<Node> openQueue = new PriorityQueue<Node>(11, new NodeComparator()); 
 		Set<Node> closedList = new HashSet<Node>();
 		
-		Node startNode = this.graph.get(start);
+		Node startNode = this.graph.get(this.start);
 		startNode.setCost(0);
 		startNode.getF(this.useHeur, this.useCost);
 		openQueue.add(startNode);
@@ -36,7 +36,7 @@ public class Astar extends pathFinding{
             closedList.add(currentNode);
             nodeCount+=1;
 
-            if (currentNode.label.equals(end)) { 
+            if (currentNode.label.equals(this.end)) { 
             	System.out.println("Nodes visited: "+ nodeCount);
             	printPath(currentNode, startNode);
             	break;

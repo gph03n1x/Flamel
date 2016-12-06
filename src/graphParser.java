@@ -91,6 +91,7 @@ public class graphParser {
 			}
 			br.close();
 			in.close();
+			fstream.close();
 		} catch (Exception e) {//Catch exception if any
 			System.err.println("Error: " + e.getMessage());
 		}

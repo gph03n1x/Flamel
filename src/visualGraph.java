@@ -1,6 +1,4 @@
-
 import java.awt.*;
-import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -38,22 +36,20 @@ class visualNode {
 
 
 public class visualGraph extends Canvas { 
-	public static Frame framePanel;
+	
+
+	private static final long serialVersionUID = 2084845050702797718L;
 	public static HashMap<Node, visualNode> visualNodes = new HashMap<Node, visualNode>();
 	public static ArrayList<visualEdge> visualEdges = new ArrayList<visualEdge>();
 	
 	
 	public visualGraph(){ 
 		setSize(200, 200); 
-		setBackground(Color.white);
-	} 
-	
-	
-	public static void main(String[] argS){ 
-		visualGraph canvasPanel = new visualGraph();
+		setBackground(Color.white); 
+		
 		
 		graphParser graph = new graphParser();
-		graph.readGraph("graph2.txt");
+		graph.readGraph("graphs/graph2.txt");
 		
 		Astar astar = new Astar();
 		astar.setGraph(graph.graph);
@@ -90,15 +86,7 @@ public class visualGraph extends Canvas {
 		}
 		
 		
-		framePanel = new Frame(); 
-		framePanel.setSize(600, 600); 
-		framePanel.add(canvasPanel); 
-		framePanel.setVisible(true); 
-		framePanel.addWindowListener(new WindowAdapter(){
-			public void windowClosing(WindowEvent we){
-				System.exit(0);
-			}
-		});
+		
 		
 	} 
 	
@@ -109,7 +97,7 @@ public class visualGraph extends Canvas {
 		double wideX = 150;
 		double wideY = 150;
 		g.setColor(Color.black);
-		System.out.println(visualEdges.size());
+
 		for (visualEdge e: visualEdges){
 			visualNodes.get(e.node1).calcX(wideX, offsetX);
 			visualNodes.get(e.node1).calcY(wideY, offsetY);
