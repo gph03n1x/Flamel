@@ -45,16 +45,18 @@ public class visualGraph extends Canvas {
 	//public String currentFile;
 	
 	public visualGraph(){ 
-		setSize(200, 200); 
+		setSize(300, 300); 
 		setBackground(Color.white); 
 	} 
 	
+	
 	public void doSearch(String start, String end) {
-		Astar astar = new Astar();
-		astar.setGraph(graph.graph);
-		astar.setHeuristics(graph.heuristic);
-		astar.setOptions(true, true);
-		astar.lookForPath(start, end);
+		//Class<?> getSe = Class.forName("Astar");
+		Astar getSe = new Astar();
+		getSe.setGraph(graph.graph);
+		getSe.setHeuristics(graph.heuristic);
+		getSe.setOptions(true, true);
+		getSe.lookForPath(start, end);
 	}
 	public void readGraph(String File){
 		graph = new graphParser();
@@ -70,7 +72,6 @@ public class visualGraph extends Canvas {
 			currentNode.actualNode = graph.graph.get(name);
 			currentNode.nodeNumberId = count;
 			currentNode.nodeCount = graph.graph.size();
-			// There is a bug somewhere around here.
 			currentNode.nodeColor = graph.graph.get(name).nodeColor;
 			visualNodes.put(graph.graph.get(name), currentNode);
 	        count +=1;
@@ -96,9 +97,9 @@ public class visualGraph extends Canvas {
 	public void paint(Graphics g){ 
 		double offsetX = this.getWidth()/2;
 		double offsetY = this.getHeight()/2;
-		int circleDiameter = 20;
-		double wideX = 150;
-		double wideY = 150;
+		int circleDiameter = 10;
+		double wideX = 75;
+		double wideY = 75;
 		g.setColor(Color.black);
 
 		for (visualEdge e: visualEdges){
