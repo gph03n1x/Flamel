@@ -1,4 +1,7 @@
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -6,6 +9,7 @@ import java.util.HashMap;
 class visualEdge {
 	Node node1;
 	Node node2;
+	Color edgeColor = Color.black;
 }
 
 
@@ -35,18 +39,19 @@ class visualNode {
 }
 
 
-public class visualGraph extends Canvas { 
-	
-
-	private static final long serialVersionUID = 2084845050702797718L;
+public class visualGraph extends Component implements MouseListener, MouseMotionListener{ 
+	private static final long serialVersionUID = 8533078139841015261L;
 	public static HashMap<Node, visualNode> visualNodes = new HashMap<Node, visualNode>();
 	public static ArrayList<visualEdge> visualEdges = new ArrayList<visualEdge>();
 	public graphParser graph;
 	//public String currentFile;
-	
+	double clickedX, clickedY, draggedOffsetX=0, draggedOffsetY=0;
+	boolean doRepaint=true;
 	public visualGraph(){ 
-		setSize(300, 300); 
-		setBackground(Color.white); 
+		System.out.println("WTH");
+		setSize(600, 600);
+		addMouseListener(this);
+		addMouseMotionListener(this);
 	} 
 	
 	
@@ -76,15 +81,22 @@ public class visualGraph extends Canvas {
 			visualNodes.put(graph.graph.get(name), currentNode);
 	        count +=1;
 	        for (Node neighbor: graph.graph.get(name).costs.keySet()){
+	        	
 	        	visualEdge edge = new visualEdge();
 	        	edge.node1 = graph.graph.get(name);
 	        	edge.node2 = neighbor;
-	        	
+
 	        	visualEdge edgeAlt = new visualEdge();
 	        	edgeAlt.node1 = neighbor;
 	        	edgeAlt.node2 = graph.graph.get(name);
 	        	
+	        	if (edge.node1.nodeColor != Color.blue && edge.node2.nodeColor != Color.blue){
+	        		edge.edgeColor = Color.magenta;
+	        		edgeAlt.edgeColor = Color.magenta;
+	        	}
+	        	
 	        	if (!visualEdges.contains(edge) && !visualEdges.contains(edgeAlt) ) {
+	        		
 	        		visualEdges.add(edge);
 	        	}
 	        	
@@ -92,19 +104,40 @@ public class visualGraph extends Canvas {
 	        }
 	        
 		}
+		doRepaint = true;
+		repaint();
+		
+		
 	}
 	
 	public void paint(Graphics g){ 
-		double offsetX = this.getWidth()/2;
-		double offsetY = this.getHeight()/2;
+		//if (!doRepaint){
+		//	g.translate((int)draggedOffsetX, (int)draggedOffsetY);
+		//	return;
+		//}
+		doRepaint=false;
+		setSize(600, 600);
+		setBounds(0,0, 600, 600);
+	    g.setColor(Color.white);
+	    g.fillRect(0, 0, this.getWidth(), this.getHeight()); // black background
+		double offsetX = this.getWidth()/2 + draggedOffsetX;
+		double offsetY = this.getHeight()/2 + draggedOffsetY;
+		/*System.out.println("Xoff:"+draggedOffsetX);
+		System.out.println("Xoff:"+draggedOffsetY);
+		System.out.println("W:"+this.getWidth());
+		System.out.println("H:"+this.getHeight());*/
 		int circleDiameter = 10;
-		double wideX = 75;
-		double wideY = 75;
+		double wideX, wideY;
+		
 		g.setColor(Color.black);
 
 		for (visualEdge e: visualEdges){
+			g.setColor(e.edgeColor);
+			wideX = wideY = visualNodes.get(e.node1).actualNode.h;
 			visualNodes.get(e.node1).calcX(wideX, offsetX);
 			visualNodes.get(e.node1).calcY(wideY, offsetY);
+			
+			wideX = wideY = visualNodes.get(e.node2).actualNode.h;
 			visualNodes.get(e.node2).calcX(wideX, offsetX);
 			visualNodes.get(e.node2).calcY(wideY, offsetY);
 			
@@ -120,5 +153,62 @@ public class visualGraph extends Canvas {
 			g.fillOval(s.x, s.y, circleDiameter, circleDiameter); 
 			g.drawString(s.actualNode.label, s.x, s.y);
 	    }
+		
+	}
+
+
+	@Override
+	public void mouseDragged(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		Point point = arg0.getPoint();
+		draggedOffsetX = point.x - clickedX;
+		draggedOffsetY = point.y - clickedY;
+		repaint();
+	}
+
+
+	@Override
+	public void mouseMoved(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void mouseClicked(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void mouseEntered(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void mouseExited(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void mousePressed(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+
+		Point point = arg0.getPoint();
+		clickedX = point.x;
+		clickedY = point.y;
+		
+	}
+
+
+	@Override
+	public void mouseReleased(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
 	} 
 }

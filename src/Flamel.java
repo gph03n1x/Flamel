@@ -1,7 +1,6 @@
 import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JProgressBar;
 import java.awt.Panel;
 import java.awt.event.ActionEvent;
@@ -12,10 +11,14 @@ import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JTextPane;
+import javax.swing.JTextField;
+import java.awt.Color;
 
 public class Flamel {
 
 	private JFrame frame;
+	private JTextField textField;
 
 	/**
 	 * Launch the application.
@@ -45,20 +48,11 @@ public class Flamel {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 512, 416);
+		frame.setBounds(100, 100, 1000, 700);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		JMenuBar menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
-		
-		JMenuItem mntmFile = new JMenuItem("File");
-		menuBar.add(mntmFile);
-		
-		JMenuItem mntmOptions = new JMenuItem("Options");
-		menuBar.add(mntmOptions);
-		
-		JMenuItem mntmAbout = new JMenuItem("About");
-		menuBar.add(mntmAbout);
 		frame.getContentPane().setLayout(null);
 		
 		Panel controlPanel = new Panel();
@@ -66,51 +60,57 @@ public class Flamel {
 		frame.getContentPane().add(controlPanel);
 		controlPanel.setLayout(new GridLayout(10, 0, 0, 0));
 		
-		Panel panel = new Panel();
-		controlPanel.add(panel);
-		panel.setLayout(new GridLayout(2, 2, 0, 0));
-		
 		DefaultComboBoxModel<String> startNodesList = new DefaultComboBoxModel<String>();
 		DefaultComboBoxModel<String> endNodesList = new DefaultComboBoxModel<String>();
-		
-		JLabel lblStartingPoint = new JLabel("Starting Node: ");
-		panel.add(lblStartingPoint);
-		
-		
-		JComboBox<String> startPoint = new JComboBox<String>(startNodesList);
-		panel.add(startPoint);
-		
-		JLabel lblEndingNode = new JLabel("Ending Node:");
-		panel.add(lblEndingNode);
-		
-		JComboBox<String> endPoint = new JComboBox<String>(endNodesList);
-		panel.add(endPoint);
 		
 		JButton graphreader = new JButton("Open Graph");
 		controlPanel.add(graphreader);
 		
+		
+		
+		JLabel lblStartingPoint = new JLabel("Starting Node: ");
+		controlPanel.add(lblStartingPoint);
+		
+		
+		JComboBox<String> startPoint = new JComboBox<String>(startNodesList);
+		controlPanel.add(startPoint);
+		
+		JLabel lblEndingNode = new JLabel("Ending Node:");
+		controlPanel.add(lblEndingNode);
+		
+		JComboBox<String> endPoint = new JComboBox<String>(endNodesList);
+		controlPanel.add(endPoint);
+		
+		JLabel lblSearchMethod = new JLabel("Search Method");
+		controlPanel.add(lblSearchMethod);
+		
+		JComboBox searchMethod = new JComboBox();
+		controlPanel.add(searchMethod);
+		
+		JLabel Options = new JLabel("Options");
+		controlPanel.add(Options);
+		
+		textField = new JTextField();
+		controlPanel.add(textField);
+		textField.setColumns(10);
+		
 		JButton btnCreatePath = new JButton("Create Path");
+		btnCreatePath.setBackground(Color.GREEN);
 		controlPanel.add(btnCreatePath);
-		
-		
-		
+
 		
 		Panel graphicPanel = new Panel();
-		graphicPanel.setBounds(152, 0, 350, 350);
+		graphicPanel.setBounds(152, 0, 605, 613);
 		frame.getContentPane().add(graphicPanel);
 		
 		visualGraph canvasPanel = new visualGraph();
 		graphicPanel.add(canvasPanel);
 		
-		Panel panel_1 = new Panel();
-		graphicPanel.add(panel_1);
-		
-		JProgressBar progressBar = new JProgressBar();
-		panel_1.add(progressBar);
-		progressBar.setValue(0);
+		JTextPane textPane = new JTextPane();
+		textPane.setBounds(763, 0, 211, 454);
+		frame.getContentPane().add(textPane);
 		
 		JFileChooser fileDialog = new JFileChooser("graphs/");
-		
 		graphreader.addActionListener(new ActionListener() {
 	    	@Override
 	    	public void actionPerformed(ActionEvent e) {
@@ -128,7 +128,6 @@ public class Flamel {
 	            }   
 	    	}
 	    });
-		
 		btnCreatePath.addActionListener(new ActionListener() {
 	    	@Override
 	    	public void actionPerformed(ActionEvent e) {
@@ -136,7 +135,7 @@ public class Flamel {
 	    		canvasPanel.doSearch(startPoint.getSelectedItem().toString(), endPoint.getSelectedItem().toString());
 	    		canvasPanel.constructGraph();
 	    		
-	    		canvasPanel.repaint();
+	    		//canvasPanel.repaint();
 	    	}
 	    });
 		

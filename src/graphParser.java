@@ -10,6 +10,7 @@ import java.util.NoSuchElementException;
 class Node {
     String label;
     HashMap<Node, Double> costs = new HashMap<Node, Double>();
+    visualNode vn;
     
     double g, h, f;
     Color nodeColor = Color.blue;
@@ -54,7 +55,7 @@ public class graphParser {
 				if (strLine.charAt(0) == '#')
 					continue;
 				String[] parts = strLine.split(" ");
-				
+				// TODO: Simplify code here.
 				if (parts.length == 2) {
 					if (!heuristic.containsKey(parts[0])) {
 						heuristic.put(parts[0], Double.parseDouble(parts[1]));
