@@ -64,6 +64,7 @@ public class Flamel {
 		DefaultComboBoxModel<String> endNodesList = new DefaultComboBoxModel<String>();
 		
 		JButton graphreader = new JButton("Open Graph");
+		
 		controlPanel.add(graphreader);
 		
 		
@@ -97,18 +98,18 @@ public class Flamel {
 		JButton btnCreatePath = new JButton("Create Path");
 		btnCreatePath.setBackground(Color.GREEN);
 		controlPanel.add(btnCreatePath);
-
-		
-		Panel graphicPanel = new Panel();
-		graphicPanel.setBounds(152, 0, 605, 613);
-		frame.getContentPane().add(graphicPanel);
 		
 		visualGraph canvasPanel = new visualGraph();
-		graphicPanel.add(canvasPanel);
+		canvasPanel.setBounds(0, 0, 1, 1);
+		frame.getContentPane().add(canvasPanel);
+		
 		
 		JTextPane textPane = new JTextPane();
 		textPane.setBounds(763, 0, 211, 454);
+		textPane.setEditable(false);
 		frame.getContentPane().add(textPane);
+		
+		canvasPanel.addReferences(frame, controlPanel, textPane);
 		
 		JFileChooser fileDialog = new JFileChooser("graphs/");
 		graphreader.addActionListener(new ActionListener() {
@@ -117,13 +118,14 @@ public class Flamel {
 	    		int returnVal = fileDialog.showOpenDialog(frame);
 	    		if (returnVal == JFileChooser.APPROVE_OPTION) {
 	    			canvasPanel.readGraph(fileDialog.getSelectedFile().getPath());
-	    			canvasPanel.constructGraph();
+	    			
 	    			startNodesList.removeAllElements();
 	    			endNodesList.removeAllElements();
 	    			for (String nodeLabel :canvasPanel.graph.graph.keySet()) {
 	    				startNodesList.addElement(nodeLabel);
 		    			endNodesList.addElement(nodeLabel);
 	    			}
+	    			canvasPanel.constructGraph();
 	    			
 	            }   
 	    	}

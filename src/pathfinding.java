@@ -14,15 +14,14 @@ public abstract class pathFinding {
 		this.heuristic = heuristic;
 	}
 	
-	public void lookForPath(String start, String end){
+	public String lookForPath(String start, String end){
 		this.start = start;
 		this.end = end;
-		this.work();
+		return this.work();
 	}
 
-	public void printPath(Node currentNode, Node startNode) {
+	public String printPath(Node currentNode, Node startNode) {
 
-    	System.out.print("Path: ");
     	double cost = 0.0;
     	String pathResult = "";
     	currentNode.nodeColor = Color.orange;
@@ -38,10 +37,10 @@ public abstract class pathFinding {
     	cost += this.graph.get(this.path.get(currentNode).label).costs.get(currentNode);
     	this.path.get(currentNode).nodeColor = Color.orange;
     	pathResult = this.path.get(currentNode).label + pathResult;
-    	System.out.println(pathResult);
-    	System.out.println("Total path cost: "+ cost + "\n");
+    	return "Path: \n" + pathResult + "\nTotal path cost: "+ cost + "\n";
+    	
 	}
 	
-	abstract void work();
+	abstract String work();
 
 }

@@ -5,7 +5,7 @@ import java.util.Set;
 
 public class breadthFirstSearch extends pathFinding{
 	
-	public void work() {
+	public String work() {
 
 		Set<Node> closedList = new HashSet<Node>();
 		Queue<Node> queue = new LinkedList<Node>();
@@ -23,9 +23,7 @@ public class breadthFirstSearch extends pathFinding{
 			//System.out.println("Checking : "+currentNode.label );
 			
 			if (currentNode.label.equals(this.end)) { 
-				System.out.println("Nodes visited: "+ nodeCount);
-				this.printPath(currentNode, startNode);
-            	break;
+				return "Nodes visited: "+ nodeCount + "\n" + printPath(currentNode, startNode);
             }
 			
 			for (Node targetNode: currentNode.costs.keySet()){
@@ -38,6 +36,7 @@ public class breadthFirstSearch extends pathFinding{
 			}
 
 		}
+		return "No path found.\n";
 	}
 
 }

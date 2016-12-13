@@ -22,7 +22,7 @@ public class Astar extends pathFinding{
 	}
 	
 	@Override
-	public void work(){
+	public String work(){
 		Queue<Node> openQueue = new PriorityQueue<Node>(11, new NodeComparator()); 
 		Set<Node> closedList = new HashSet<Node>();
 		
@@ -36,10 +36,8 @@ public class Astar extends pathFinding{
             closedList.add(currentNode);
             nodeCount+=1;
 
-            if (currentNode.label.equals(this.end)) { 
-            	System.out.println("Nodes visited: "+ nodeCount);
-            	printPath(currentNode, startNode);
-            	break;
+            if (currentNode.label.equals(this.end)) {  
+            	return "Nodes visited: "+ nodeCount + "\n" + printPath(currentNode, startNode);
             }
             
             for (Node targetNode: currentNode.costs.keySet()){
@@ -56,5 +54,6 @@ public class Astar extends pathFinding{
                 }
     		} 
 		}
+		return "No path found.\n";
 	}
 }

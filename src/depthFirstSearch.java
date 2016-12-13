@@ -4,7 +4,7 @@ import java.util.Stack;
 
 public class depthFirstSearch extends pathFinding {
 	
-	public void work() {
+	public String work() {
 		Set<Node> closedList = new HashSet<Node>();
 		Stack<Node> stack = new Stack<Node>();
 
@@ -19,9 +19,7 @@ public class depthFirstSearch extends pathFinding {
 			currentNode = stack.peek();
 			nodeCount+=1;
 			if (currentNode.label.equals(this.end)) { 
-				System.out.println("Nodes visited: "+ nodeCount);
-				this.printPath(currentNode, startNode);
-            	break;
+				return "Nodes visited: "+ nodeCount + "\n" + printPath(currentNode, startNode);
             }
 			boolean addedToS = false;
 			for (Node targetNode: currentNode.costs.keySet()){
@@ -36,6 +34,7 @@ public class depthFirstSearch extends pathFinding {
 			}
 			
 		}
+		return "No path found.\n";
 	}
 	
 }

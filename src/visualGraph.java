@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.imageio.ImageIO;
+import javax.swing.JFrame;
+import javax.swing.JTextPane;
 
 
 class visualEdge {
@@ -53,15 +55,26 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 	double clickedX, clickedY, draggedOffsetX=0, draggedOffsetY=0;
 	double newPosX=0, newPosY=0;
 	boolean createImage=false;
-	int heightAndWidth;
-	BufferedImage image;
+	int heightAndWidth = 800;
 	
+	BufferedImage image;
+	JFrame frame;
+	JTextPane textPanel;
+	Panel controlPanel;
 	
 	public visualGraph(){ 
 		addMouseListener(this);
 		addMouseMotionListener(this);
+		
 	} 
 	
+	public void addReferences(JFrame frame, Panel controlPanel, JTextPane textPanel) {
+		this.frame = frame;
+		this.controlPanel = controlPanel;
+		this.textPanel = textPanel;
+		this.setBackground(Color.white);
+		this.resizeComponents();
+	}
 	
 	public void doSearch(String start, String end) {
 		//Class<?> getSe = Class.forName("Astar");
@@ -69,8 +82,19 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 		getSe.setGraph(graph.graph);
 		getSe.setHeuristics(graph.heuristic);
 		getSe.setOptions(true, true);
-		getSe.lookForPath(start, end);
+		
+		this.textPanel.setText(getSe.lookForPath(start, end));
 	}
+	
+	public void resizeComponents() {
+		// Bit hardcoded 
+		this.frame.setSize(heightAndWidth+400, heightAndWidth+100);
+		this.setBounds(this.controlPanel.getWidth(), 0, heightAndWidth+this.controlPanel.getWidth(), heightAndWidth);
+		this.textPanel.setBounds(this.getWidth()+10, 0,
+				this.textPanel.getWidth(), this.textPanel.getHeight());
+	}
+	
+	
 	public void readGraph(String File){
 		graph = new graphParser();
 		graph.readGraph(File);
@@ -118,11 +142,12 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 	        
 		}
 		heightAndWidth = 2 * (int)maxHeuristic;
-		
+		resizeComponents();
 		image = new BufferedImage(heightAndWidth, heightAndWidth, BufferedImage.TYPE_INT_ARGB);
 		Graphics g = image.getGraphics();
 		setSize(heightAndWidth, heightAndWidth);
-		setBounds(0,0, heightAndWidth, heightAndWidth);
+
+		
 		createImage=true;
 		this.paint(g);
 		try {
@@ -135,47 +160,33 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 	}
 	
 	public void paint(Graphics g){ 
-		
+		g.setColor(Color.white);
+	    g.fillRect(0, 0, heightAndWidth, heightAndWidth);
+	    
 		if (!createImage){
 			if (draggedOffsetX != 0 && draggedOffsetY != 0){
-				g.setColor(Color.white);
-			    g.fillRect(0, 0, heightAndWidth, heightAndWidth);
 				g.drawImage(image, (int)draggedOffsetX, (int)draggedOffsetY, heightAndWidth, heightAndWidth, null);
 				return;
 			}
-			g.setColor(Color.white);
-		    g.fillRect(0, 0, heightAndWidth, heightAndWidth);
 			g.drawImage(image, (int)newPosX, (int)newPosY, heightAndWidth, heightAndWidth, null);
 			return;
 		}
-		// Pass width height my way :)
-	    g.setColor(Color.white);
-	    g.fillRect(0, 0, heightAndWidth, heightAndWidth); // black background
-	    //newPosX = draggedOffsetX;
-	    //newPosY = draggedOffsetY;
-	    /*
-	    newPosX += draggedOffsetX;
-	    newPosY += draggedOffsetY;
-	    */
+	    
 		double offsetX = heightAndWidth/2 + newPosX + draggedOffsetX;
 		double offsetY = heightAndWidth/2 + newPosY + draggedOffsetX;
-		
+		/*
 		System.out.println("W:"+this.getWidth());
 		System.out.println("H:"+this.getHeight());
 		System.out.println("Xoff:"+draggedOffsetX);
 		System.out.println("Yoff:"+draggedOffsetY);
 		System.out.println("PXoff:"+newPosX);
 		System.out.println("PYoff:"+newPosY);
-		
+		*/
 		
 		int circleDiameter = 10;
 		double wideX, wideY;
-		//g.setColor(Color.red);
-		//g.fillOval((int)offsetX-(int)draggedOffsetX, (int)offsetY-(int)draggedOffsetY, circleDiameter, circleDiameter);
-		//g.setColor(Color.yellow);
-		//g.fillOval((int)offsetX, (int)offsetY, 2*circleDiameter, 2*circleDiameter); 
+		
 		g.setColor(Color.black);
-
 		for (visualEdge e: visualEdges){
 			g.setColor(e.edgeColor);
 			wideX = wideY = visualNodes.get(e.node1).actualNode.h;
