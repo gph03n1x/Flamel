@@ -2,8 +2,13 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import javax.imageio.ImageIO;
 
 
 class visualEdge {
@@ -46,10 +51,13 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 	public graphParser graph;
 	//public String currentFile;
 	double clickedX, clickedY, draggedOffsetX=0, draggedOffsetY=0;
-	boolean doRepaint=true;
+	double newPosX=0, newPosY=0;
+	boolean createImage=false;
+	int heightAndWidth;
+	BufferedImage image;
+	
+	
 	public visualGraph(){ 
-		System.out.println("WTH");
-		setSize(600, 600);
 		addMouseListener(this);
 		addMouseMotionListener(this);
 	} 
@@ -68,13 +76,18 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 		graph.readGraph(File);
 	}
 	
+	
+	
 	public void constructGraph(){
 		visualNodes.clear();
 		visualEdges.clear();
 		int count = 1;
+		double maxHeuristic = 0;
 		for (String name: graph.graph.keySet()){
 			visualNode currentNode = new visualNode();
 			currentNode.actualNode = graph.graph.get(name);
+			if (currentNode.actualNode.h > maxHeuristic)
+				maxHeuristic = currentNode.actualNode.h;
 			currentNode.nodeNumberId = count;
 			currentNode.nodeCount = graph.graph.size();
 			currentNode.nodeColor = graph.graph.get(name).nodeColor;
@@ -104,31 +117,63 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 	        }
 	        
 		}
-		doRepaint = true;
+		heightAndWidth = 2 * (int)maxHeuristic;
+		
+		image = new BufferedImage(heightAndWidth, heightAndWidth, BufferedImage.TYPE_INT_ARGB);
+		Graphics g = image.getGraphics();
+		setSize(heightAndWidth, heightAndWidth);
+		setBounds(0,0, heightAndWidth, heightAndWidth);
+		createImage=true;
+		this.paint(g);
+		try {
+			ImageIO.write(image, "png", new File("test.png"));
+		} catch (IOException ex) { }
+		createImage=false;
 		repaint();
 		
 		
 	}
 	
 	public void paint(Graphics g){ 
-		//if (!doRepaint){
-		//	g.translate((int)draggedOffsetX, (int)draggedOffsetY);
-		//	return;
-		//}
-		doRepaint=false;
-		setSize(600, 600);
-		setBounds(0,0, 600, 600);
+		
+		if (!createImage){
+			if (draggedOffsetX != 0 && draggedOffsetY != 0){
+				g.setColor(Color.white);
+			    g.fillRect(0, 0, heightAndWidth, heightAndWidth);
+				g.drawImage(image, (int)draggedOffsetX, (int)draggedOffsetY, heightAndWidth, heightAndWidth, null);
+				return;
+			}
+			g.setColor(Color.white);
+		    g.fillRect(0, 0, heightAndWidth, heightAndWidth);
+			g.drawImage(image, (int)newPosX, (int)newPosY, heightAndWidth, heightAndWidth, null);
+			return;
+		}
+		// Pass width height my way :)
 	    g.setColor(Color.white);
-	    g.fillRect(0, 0, this.getWidth(), this.getHeight()); // black background
-		double offsetX = this.getWidth()/2 + draggedOffsetX;
-		double offsetY = this.getHeight()/2 + draggedOffsetY;
-		/*System.out.println("Xoff:"+draggedOffsetX);
-		System.out.println("Xoff:"+draggedOffsetY);
+	    g.fillRect(0, 0, heightAndWidth, heightAndWidth); // black background
+	    //newPosX = draggedOffsetX;
+	    //newPosY = draggedOffsetY;
+	    /*
+	    newPosX += draggedOffsetX;
+	    newPosY += draggedOffsetY;
+	    */
+		double offsetX = heightAndWidth/2 + newPosX + draggedOffsetX;
+		double offsetY = heightAndWidth/2 + newPosY + draggedOffsetX;
+		
 		System.out.println("W:"+this.getWidth());
-		System.out.println("H:"+this.getHeight());*/
+		System.out.println("H:"+this.getHeight());
+		System.out.println("Xoff:"+draggedOffsetX);
+		System.out.println("Yoff:"+draggedOffsetY);
+		System.out.println("PXoff:"+newPosX);
+		System.out.println("PYoff:"+newPosY);
+		
+		
 		int circleDiameter = 10;
 		double wideX, wideY;
-		
+		//g.setColor(Color.red);
+		//g.fillOval((int)offsetX-(int)draggedOffsetX, (int)offsetY-(int)draggedOffsetY, circleDiameter, circleDiameter);
+		//g.setColor(Color.yellow);
+		//g.fillOval((int)offsetX, (int)offsetY, 2*circleDiameter, 2*circleDiameter); 
 		g.setColor(Color.black);
 
 		for (visualEdge e: visualEdges){
@@ -165,7 +210,25 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 		draggedOffsetY = point.y - clickedY;
 		repaint();
 	}
+	
+	@Override
+	public void mousePressed(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		Point point = arg0.getPoint();
+		clickedX = point.x;
+		clickedY = point.y;
+	}
 
+
+	@Override
+	public void mouseReleased(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		newPosX += draggedOffsetX;
+	    newPosY += draggedOffsetY;
+	    draggedOffsetX = 0;
+	    draggedOffsetY = 0;
+	    repaint();
+	} 
 
 	@Override
 	public void mouseMoved(MouseEvent arg0) {
@@ -195,20 +258,5 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 	}
 
 
-	@Override
-	public void mousePressed(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-
-		Point point = arg0.getPoint();
-		clickedX = point.x;
-		clickedY = point.y;
-		
-	}
-
-
-	@Override
-	public void mouseReleased(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	} 
+	
 }
