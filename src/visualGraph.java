@@ -6,7 +6,13 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Random;
+import java.util.Set;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
@@ -22,17 +28,26 @@ class visualEdge {
 
 class visualNode {
 	Node actualNode;
-	int x, y, nodeNumberId, nodeCount;
-	Color nodeColor = Color.blue;
+	int x, y;
+	double Phase;
 	
+	public void moveX(double totalOffsetX){
+		this.x += totalOffsetX;
+	}
 	
-	public void calcX(double wideX, double offsetX){
-		double rads = nodeNumberId * 2  * Math.PI/nodeCount;
+	public void moveY(double totalOffsetY){
+		this.y += totalOffsetY;
+	}
+	
+	public void calcX(double wideX, double offsetX, double deg){
+		//double rads = 2  * Math.PI * (deg + Phase);
+		double rads = 2  * Math.PI * (deg);
 		this.x = (int)(Math.cos(rads) * wideX + offsetX);
 	}
 	
-	public void calcY(double wideY, double offsetY){
-		double rads = nodeNumberId * 2  * Math.PI/nodeCount;
+	public void calcY(double wideY, double offsetY, double deg){
+		//double rads = 2  * Math.PI * (deg + Phase);
+	    double rads = 2  * Math.PI * (deg);
 		this.y = (int)(Math.sin(rads) * wideY + offsetY);
 	}
 	
@@ -44,6 +59,12 @@ class visualNode {
 		return this.y + diameter/2;
 	}
 }
+
+class visualNodeComparator implements Comparator<visualNode> {
+    public int compare(visualNode nodeFirst, visualNode nodeSecond) {
+        return Double.compare(nodeFirst.actualNode.h, nodeSecond.actualNode.h);
+    }
+} 
 
 
 public class visualGraph extends Component implements MouseListener, MouseMotionListener{ 
@@ -94,29 +115,43 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 				this.textPanel.getWidth(), this.textPanel.getHeight());
 	}
 	
-	
 	public void readGraph(String File){
 		graph = new graphParser();
 		graph.readGraph(File);
 	}
-	
-	
-	
+
 	public void constructGraph(){
+		Queue<visualNode> openQueue = new LinkedList<visualNode>();
+		Set<visualNode> closedList = new HashSet<visualNode>();
+		visualNode currentNode;
+		// HardCoded stuff here
+		double shouldBeAwayDistance = 100;
+		currentNode = null;
+		double startDeg = 0;
+		double maxX=0, maxY=0, minX=heightAndWidth/2, minY=heightAndWidth/2;
+		
 		visualNodes.clear();
 		visualEdges.clear();
-		int count = 1;
-		double maxHeuristic = 0;
+		
+		heightAndWidth = 800;
+		
+		
 		for (String name: graph.graph.keySet()){
-			visualNode currentNode = new visualNode();
+			currentNode = new visualNode();
 			currentNode.actualNode = graph.graph.get(name);
-			if (currentNode.actualNode.h > maxHeuristic)
-				maxHeuristic = currentNode.actualNode.h;
-			currentNode.nodeNumberId = count;
-			currentNode.nodeCount = graph.graph.size();
-			currentNode.nodeColor = graph.graph.get(name).nodeColor;
 			visualNodes.put(graph.graph.get(name), currentNode);
-	        count +=1;
+			
+	        if (currentNode.actualNode.h == 0.0) {
+	        	currentNode.x = heightAndWidth/2;
+	        	currentNode.y = heightAndWidth/2;
+	        	currentNode.Phase = 0;
+	        	openQueue.add(currentNode);
+	        	minX = currentNode.x;
+	        	minY = currentNode.y;
+	        //} else if (rand.nextInt(100) + 1 <= 35){
+	        //	currentNode.nodeNumberId = rand.nextInt(currentNode.nodeCount) + 1;
+	        //	closedList.add(currentNode);
+	        }
 	        for (Node neighbor: graph.graph.get(name).costs.keySet()){
 	        	
 	        	visualEdge edge = new visualEdge();
@@ -127,27 +162,106 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 	        	edgeAlt.node1 = neighbor;
 	        	edgeAlt.node2 = graph.graph.get(name);
 	        	
-	        	if (edge.node1.nodeColor != Color.blue && edge.node2.nodeColor != Color.blue){
-	        		edge.edgeColor = Color.magenta;
-	        		edgeAlt.edgeColor = Color.magenta;
-	        	}
-	        	
 	        	if (!visualEdges.contains(edge) && !visualEdges.contains(edgeAlt) ) {
-	        		
 	        		visualEdges.add(edge);
 	        	}
-	        	
-	        	//g.drawLine(node1.x, node1.y, node2.x, node2.y);
 	        }
-	        
 		}
-		heightAndWidth = 2 * (int)maxHeuristic;
+		
+		 
+		
+		
+		
+		while (!openQueue.isEmpty()) {
+			currentNode = openQueue.poll();
+			closedList.add(currentNode);
+			startDeg = currentNode.Phase;
+			if (currentNode.x > maxX){
+				maxX = currentNode.x;
+			}
+			if (currentNode.y > maxY){
+				maxY = currentNode.y;
+			}
+			if (currentNode.x < minX){
+				minX = currentNode.x;
+			}
+			if (currentNode.y < minY){
+				minY = currentNode.y;
+			}
+			double firstDeg = 0;
+			double divisions = currentNode.actualNode.costs.size()+1;
+			for (Node neighbor: currentNode.actualNode.costs.keySet()){ 
+				double wideX=80, wideY=80;
+				firstDeg +=1;
+			    visualNode currentNeighbor = visualNodes.get(neighbor);
+			   
+			    if (closedList.contains(currentNeighbor)) continue;
+			    //if (firstDeg/divisions == startDeg) continue;
+			    boolean positionedProperly = false;
+			    
+			    while (!positionedProperly){
+			    	positionedProperly = true;
+				    currentNeighbor.calcX(wideX, currentNode.x, firstDeg/divisions);
+				    currentNeighbor.calcY(wideY, currentNode.y, firstDeg/divisions);
+				    currentNeighbor.Phase = firstDeg/divisions + 0.5;
+				    for (visualNode otherNode: closedList){
+				    	
+				    	double d = Math.sqrt(Math.pow(otherNode.x - currentNeighbor.x, 2)+Math.pow(otherNode.y - currentNeighbor.y, 2));
+				    	//System.out.println(currentNeighbor.actualNode.label + ":"+ otherNode.actualNode.label);
+				    	//System.out.println("X"+currentNeighbor.x + ":"+ otherNode.x);
+				    	//System.out.println("Y"+currentNeighbor.y + ":"+ otherNode.y);
+				    	//System.out.println(d);
+				    	if (d < shouldBeAwayDistance){
+				    		positionedProperly = false;
+				    		break;
+				    	}
+				    	
+				    }
+				    wideX += 50;
+				    wideY += 50;
+				    
+				}
+			   
+			   
+			    if (!closedList.contains(currentNeighbor)) {
+				    openQueue.add(currentNeighbor);
+			    }
+			   
+			}
+		}
+		//heightAndWidth = 2 * ( maxX > maxY ? (int)maxX : (int)maxY ) ;
+		//Center the graph as good as possible
+		//Move inside towards the center the nodes that are outside 
+		//
+		double polX = (minX >= 0 ? 0 : -minX);
+		double polY = (minY >= 0 ? 0 : -minY);;
+		System.out.println("MX"+minX);
+    	System.out.println("MY"+minY);
+		System.out.println("PX"+polX);
+    	System.out.println("PY"+polY);
+		heightAndWidth = 2 * ( maxX > maxY ? (int)maxX : (int)maxY ) ;
+		polX += Math.abs((minX+(maxX-minX)/2)-(heightAndWidth/2));
+		polY += Math.abs((minY+(maxX-minY)/2)-(heightAndWidth/2));
+
+		for (Node n : visualNodes.keySet()) {
+			visualNode s = visualNodes.get(n);
+			s.x += polX;
+			s.y += polY;
+			System.out.println("X"+s.x);
+	    	System.out.println("Y"+s.y );
+
+	    }
+
 		resizeComponents();
+		softRepaint();
+		
+	}
+	
+	public void softRepaint() {
 		image = new BufferedImage(heightAndWidth, heightAndWidth, BufferedImage.TYPE_INT_ARGB);
 		Graphics g = image.getGraphics();
 		setSize(heightAndWidth, heightAndWidth);
 
-		
 		createImage=true;
 		this.paint(g);
 		try {
@@ -155,9 +269,8 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 		} catch (IOException ex) { }
 		createImage=false;
 		repaint();
-		
-		
 	}
+	
 	
 	public void paint(Graphics g){ 
 		g.setColor(Color.white);
@@ -171,31 +284,14 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 			g.drawImage(image, (int)newPosX, (int)newPosY, heightAndWidth, heightAndWidth, null);
 			return;
 		}
-	    
-		double offsetX = heightAndWidth/2 + newPosX + draggedOffsetX;
-		double offsetY = heightAndWidth/2 + newPosY + draggedOffsetX;
-		/*
-		System.out.println("W:"+this.getWidth());
-		System.out.println("H:"+this.getHeight());
-		System.out.println("Xoff:"+draggedOffsetX);
-		System.out.println("Yoff:"+draggedOffsetY);
-		System.out.println("PXoff:"+newPosX);
-		System.out.println("PYoff:"+newPosY);
-		*/
+
+		int circleDiameter = 10; // Hardcoded
 		
-		int circleDiameter = 10;
-		double wideX, wideY;
-		
-		g.setColor(Color.black);
 		for (visualEdge e: visualEdges){
-			g.setColor(e.edgeColor);
-			wideX = wideY = visualNodes.get(e.node1).actualNode.h;
-			visualNodes.get(e.node1).calcX(wideX, offsetX);
-			visualNodes.get(e.node1).calcY(wideY, offsetY);
-			
-			wideX = wideY = visualNodes.get(e.node2).actualNode.h;
-			visualNodes.get(e.node2).calcX(wideX, offsetX);
-			visualNodes.get(e.node2).calcY(wideY, offsetY);
+			g.setColor(Color.black);
+			if (e.node1.nodeColor != Color.blue && e.node2.nodeColor != Color.blue){
+        		g.setColor(Color.magenta);
+        	}
 			
 			g.drawLine(visualNodes.get(e.node1).getCenterX(circleDiameter),
 					visualNodes.get(e.node1).getCenterY(circleDiameter),
@@ -205,7 +301,7 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 		}
 		for (Node n : visualNodes.keySet()) {
 			visualNode s = visualNodes.get(n);
-			g.setColor(s.nodeColor);
+			g.setColor(s.actualNode.nodeColor);
 			g.fillOval(s.x, s.y, circleDiameter, circleDiameter); 
 			g.drawString(s.actualNode.label, s.x, s.y);
 	    }

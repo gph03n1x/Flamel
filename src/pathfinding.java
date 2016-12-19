@@ -15,13 +15,16 @@ public abstract class pathFinding {
 	}
 	
 	public String lookForPath(String start, String end){
+		this.path.clear();
 		this.start = start;
 		this.end = end;
 		return this.work();
 	}
 
 	public String printPath(Node currentNode, Node startNode) {
-
+		for (String label : graph.keySet()) {
+			graph.get(label).nodeColor = Color.blue;
+		}
     	double cost = 0.0;
     	String pathResult = "";
     	currentNode.nodeColor = Color.orange;

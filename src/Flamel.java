@@ -133,11 +133,8 @@ public class Flamel {
 		btnCreatePath.addActionListener(new ActionListener() {
 	    	@Override
 	    	public void actionPerformed(ActionEvent e) {
-	    		canvasPanel.readGraph(fileDialog.getSelectedFile().getPath());
 	    		canvasPanel.doSearch(startPoint.getSelectedItem().toString(), endPoint.getSelectedItem().toString());
-	    		canvasPanel.constructGraph();
-	    		
-	    		//canvasPanel.repaint();
+	    		canvasPanel.softRepaint();
 	    	}
 	    });
 		
