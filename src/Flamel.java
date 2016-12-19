@@ -14,6 +14,7 @@ import javax.swing.JButton;
 import javax.swing.JTextPane;
 import javax.swing.JTextField;
 import java.awt.Color;
+import javax.swing.JMenu;
 
 public class Flamel {
 
@@ -53,6 +54,9 @@ public class Flamel {
 		
 		JMenuBar menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
+		
+		JMenu mnOptions = new JMenu("Options");
+		menuBar.add(mnOptions);
 		frame.getContentPane().setLayout(null);
 		
 		Panel controlPanel = new Panel();

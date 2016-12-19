@@ -239,9 +239,9 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
     	System.out.println("MY"+minY);
 		System.out.println("PX"+polX);
     	System.out.println("PY"+polY);
-		heightAndWidth = 2 * ( maxX > maxY ? (int)maxX : (int)maxY ) ;
+		heightAndWidth = 2 * ( maxX-minX > maxX-minY ? (int)(maxX-minX) : (int)(maxY-minY) ) ;
 		polX += Math.abs((minX+(maxX-minX)/2)-(heightAndWidth/2));
-		polY += Math.abs((minY+(maxX-minY)/2)-(heightAndWidth/2));
+		polY += Math.abs((minY+(maxY-minY)/2)-(heightAndWidth/2));
 
 		for (Node n : visualNodes.keySet()) {
 			visualNode s = visualNodes.get(n);
