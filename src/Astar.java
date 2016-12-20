@@ -21,7 +21,7 @@ public class Astar extends pathFinding{
 		this.useCost = useCost;
 	}
 	
-	@Override
+	@Override // wow override
 	public String work(){
 		Queue<Node> openQueue = new PriorityQueue<Node>(11, new NodeComparator()); 
 		Set<Node> closedList = new HashSet<Node>();

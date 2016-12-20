@@ -14,6 +14,7 @@ import java.util.Set;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextPane;
 
 
@@ -72,8 +73,8 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 	
 	BufferedImage image;
 	JFrame frame;
-	JTextPane textPanel;
 	Panel controlPanel;
+	JTabbedPane tabbedPane;
 	
 	public visualGraph(){ 
 		addMouseListener(this);
@@ -81,11 +82,11 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 		
 	} 
 	
-	public void addReferences(JFrame frame, Panel controlPanel, JTextPane textPanel) {
+	public void addReferences(JFrame frame, Panel controlPanel, JTabbedPane tabbedPane) {
 		this.frame = frame;
 		this.controlPanel = controlPanel;
-		this.textPanel = textPanel;
-		this.setBackground(Color.white);
+		this.tabbedPane = tabbedPane;
+		
 		this.resizeComponents();
 	}
 	
@@ -95,16 +96,17 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 		getSe.setGraph(graph.graph);
 		getSe.setHeuristics(graph.heuristic);
 		getSe.setOptions(true, true);
-		
-		this.textPanel.setText(getSe.lookForPath(start, end));
+		getSe.lookForPath(start, end);
+		//this.textPanel.setText(getSe.lookForPath(start, end));
 	}
 	
 	public void resizeComponents() {
 		// Bit hardcoded 
 		this.frame.setSize(heightAndWidth+400, heightAndWidth+100);
-		this.setBounds(this.controlPanel.getWidth(), 0, heightAndWidth+this.controlPanel.getWidth(), heightAndWidth);
-		this.textPanel.setBounds(this.getWidth()+10, 0,
-				this.textPanel.getWidth(), this.textPanel.getHeight());
+		this.tabbedPane.setBounds(this.controlPanel.getWidth(), 0, heightAndWidth+this.controlPanel.getWidth(), heightAndWidth);
+		this.setSize(this.tabbedPane.getWidth(), this.tabbedPane.getHeight());
+		heightAndWidth = this.tabbedPane.getWidth() > this.tabbedPane.getHeight() ? this.tabbedPane.getWidth() : this.tabbedPane.getHeight(); 
+		
 	}
 	
 	public void readGraph(String File){
@@ -124,7 +126,6 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 		visualEdges.clear();
 		
 		heightAndWidth = 800;
-		
 		
 		for (String name: graph.graph.keySet()){
 			currentNode = new visualNode();
@@ -156,10 +157,6 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 	        	}
 	        }
 		}
-		
-		 
-		
-		
 		
 		while (!openQueue.isEmpty()) {
 			currentNode = openQueue.poll();
@@ -222,7 +219,7 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 		
 		imageHeight = 2 * (int)(maxX-minX);
 		imageWidth = 2 * (int)(maxY-minY) ;
-		System.out.println("H"+imageHeight+"W"+imageWidth);
+		//System.out.println("H"+imageHeight+"W"+imageWidth);
 		polX += Math.abs((minX+(maxX-minX)/2)-(heightAndWidth/2));
 		polY += Math.abs((minY+(maxY-minY)/2)-(heightAndWidth/2));
 
@@ -238,6 +235,7 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 	}
 	
 	public void softRepaint() {
+		System.out.println("SOFT");
 		image = new BufferedImage(imageHeight, imageWidth, BufferedImage.TYPE_INT_ARGB);
 		Graphics g = image.getGraphics();
 		setSize(imageHeight, imageWidth);
@@ -262,8 +260,8 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 			g.drawImage(image, (int)(newPosX+draggedOffsetX), (int)(newPosY+draggedOffsetY), imageHeight, imageWidth, null);
 			return;
 		}
-
 		
+		System.out.println("CALLED");
 		g.fillRect(0, 0, imageHeight, imageWidth);
 		for (visualEdge e: visualEdges){
 			g.setColor(Color.black);
@@ -289,18 +287,14 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 
 	@Override
 	public void mouseDragged(MouseEvent arg0) {
-		// TODO Auto-generated method stub
 		Point point = arg0.getPoint();
-		
 		draggedOffsetX = point.x - clickedX;
 		draggedOffsetY = point.y - clickedY;
-		
 		repaint();
 	}
 	
 	@Override
 	public void mousePressed(MouseEvent arg0) {
-		// TODO Auto-generated method stub
 		Point point = arg0.getPoint();
 		clickedX = point.x;
 		clickedY = point.y;
@@ -309,13 +303,11 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 
 	@Override
 	public void mouseReleased(MouseEvent arg0) {
-		// TODO Auto-generated method stub
 		Point point = arg0.getPoint();
 		draggedOffsetX = 0;
 		draggedOffsetY = 0;
 		newPosX += (point.x - clickedX);
 		newPosY += (point.y - clickedY);
-		
 	    repaint();
 	} 
 

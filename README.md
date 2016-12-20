@@ -1,8 +1,9 @@
 ## Flamel
 
-Flamel is a program which compares different path-finding algorithms.
+Flamel is a program which visualizes and compares different path-finding algorithms.
 
-### Adding features like :
-- Graphical User Interface.
-- Clean code. ( I am trying )
-
+### Todos :
+- Usable graphical environment
+- Make configurable options
+- Add comments to the code
+- Optimize if possible

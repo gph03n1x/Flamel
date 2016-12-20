@@ -5,6 +5,7 @@ import java.util.Set;
 
 public class breadthFirstSearch extends pathFinding{
 	
+	// work work work work work
 	public String work() {
 
 		Set<Node> closedList = new HashSet<Node>();

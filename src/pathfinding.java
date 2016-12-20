@@ -15,6 +15,9 @@ public abstract class pathFinding {
 	}
 	
 	public String lookForPath(String start, String end){
+		/*
+		 * Clears the path and then calls work()
+		 */
 		this.path.clear();
 		this.start = start;
 		this.end = end;
@@ -25,7 +28,7 @@ public abstract class pathFinding {
 		for (String label : graph.keySet()) {
 			graph.get(label).nodeColor = Color.blue;
 		}
-    	double cost = 0.0;
+    	double cost = 0.00;
     	String pathResult = "";
     	currentNode.nodeColor = Color.orange;
     	pathResult = "->"+currentNode.label;

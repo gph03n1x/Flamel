@@ -15,13 +15,15 @@ import javax.swing.JTextPane;
 import javax.swing.JTextField;
 import java.awt.Color;
 import javax.swing.JMenu;
+import javax.swing.JTabbedPane;
+import javax.swing.JSplitPane;
 
 public class Flamel {
 
 	private JFrame frame;
 	private JTextField textField;
 
-	/**
+	/*
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
@@ -37,14 +39,14 @@ public class Flamel {
 		});
 	}
 
-	/**
+	/*
 	 * Create the application.
 	 */
 	public Flamel() {
 		initialize();
 	}
 
-	/**
+	/*
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
@@ -103,17 +105,17 @@ public class Flamel {
 		btnCreatePath.setBackground(Color.GREEN);
 		controlPanel.add(btnCreatePath);
 		
-		visualGraph canvasPanel = new visualGraph();
-		canvasPanel.setBounds(0, 0, 1, 1);
-		frame.getContentPane().add(canvasPanel);
+		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPane.setBounds(156, 0, 224, 629);
+		frame.getContentPane().add(tabbedPane);
 		
+		visualGraph canvasPanel = new visualGraph();
+		tabbedPane.addTab("Graph", null, canvasPanel, null);
+		
+		canvasPanel.addReferences(frame, controlPanel, tabbedPane);
 		
 		JTextPane textPane = new JTextPane();
-		textPane.setBounds(763, 0, 211, 454);
-		textPane.setEditable(false);
-		frame.getContentPane().add(textPane);
-		
-		canvasPanel.addReferences(frame, controlPanel, textPane);
+		tabbedPane.addTab("Command window", null, textPane, null);
 		
 		JFileChooser fileDialog = new JFileChooser("graphs/");
 		graphreader.addActionListener(new ActionListener() {
@@ -138,6 +140,7 @@ public class Flamel {
 	    	@Override
 	    	public void actionPerformed(ActionEvent e) {
 	    		canvasPanel.doSearch(startPoint.getSelectedItem().toString(), endPoint.getSelectedItem().toString());
+	    		System.out.println("COLORED");
 	    		canvasPanel.softRepaint();
 	    	}
 	    });
