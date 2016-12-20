@@ -66,6 +66,9 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 	double newPosX=0, newPosY=0;
 	boolean createImage=false;
 	int heightAndWidth = 800;
+	int circleDiameter = 10;
+	int imageHeight, imageWidth;
+	
 	
 	BufferedImage image;
 	JFrame frame;
@@ -217,7 +220,9 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 		double polX = (minX >= 0 ? 0 : -minX);
 		double polY = (minY >= 0 ? 0 : -minY);;
 		
-		heightAndWidth = 2 * ( maxX-minX > maxX-minY ? (int)(maxX-minX) : (int)(maxY-minY) ) ;
+		imageHeight = 2 * (int)(maxX-minX);
+		imageWidth = 2 * (int)(maxY-minY) ;
+		System.out.println("H"+imageHeight+"W"+imageWidth);
 		polX += Math.abs((minX+(maxX-minX)/2)-(heightAndWidth/2));
 		polY += Math.abs((minY+(maxY-minY)/2)-(heightAndWidth/2));
 
@@ -225,9 +230,6 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 			visualNode s = visualNodes.get(n);
 			s.x += polX;
 			s.y += polY;
-			//System.out.println("X"+s.x);
-	    	//System.out.println("Y"+s.y );
-
 	    }
 
 		resizeComponents();
@@ -236,31 +238,33 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 	}
 	
 	public void softRepaint() {
-		image = new BufferedImage(heightAndWidth, heightAndWidth, BufferedImage.TYPE_INT_ARGB);
+		image = new BufferedImage(imageHeight, imageWidth, BufferedImage.TYPE_INT_ARGB);
 		Graphics g = image.getGraphics();
-		setSize(heightAndWidth, heightAndWidth);
+		setSize(imageHeight, imageWidth);
 
 		createImage=true;
 		this.paint(g);
 		try {
-			ImageIO.write(image, "png", new File("test.png"));
+			ImageIO.write(image, "png", new File("images/test.png"));
 		} catch (IOException ex) { }
 		createImage=false;
+		setSize(heightAndWidth, heightAndWidth);
 		repaint();
 	}
 	
 	
 	public void paint(Graphics g){ 
 		g.setColor(Color.white);
-	    g.fillRect(0, 0, heightAndWidth, heightAndWidth);
+	    
 	    
 		if (!createImage){
-			g.drawImage(image, (int)(newPosX+draggedOffsetX), (int)(newPosY+draggedOffsetY), heightAndWidth, heightAndWidth, null);
+			g.fillRect(0, 0, heightAndWidth, heightAndWidth);
+			g.drawImage(image, (int)(newPosX+draggedOffsetX), (int)(newPosY+draggedOffsetY), imageHeight, imageWidth, null);
 			return;
 		}
 
-		int circleDiameter = 10; // Hardcoded
 		
+		g.fillRect(0, 0, imageHeight, imageWidth);
 		for (visualEdge e: visualEdges){
 			g.setColor(Color.black);
 			if (e.node1.nodeColor != Color.blue && e.node2.nodeColor != Color.blue){
