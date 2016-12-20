@@ -6,12 +6,10 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.Random;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
@@ -29,7 +27,6 @@ class visualEdge {
 class visualNode {
 	Node actualNode;
 	int x, y;
-	double Phase;
 	
 	public void moveX(double totalOffsetX){
 		this.x += totalOffsetX;
@@ -40,13 +37,11 @@ class visualNode {
 	}
 	
 	public void calcX(double wideX, double offsetX, double deg){
-		//double rads = 2  * Math.PI * (deg + Phase);
 		double rads = 2  * Math.PI * (deg);
 		this.x = (int)(Math.cos(rads) * wideX + offsetX);
 	}
 	
 	public void calcY(double wideY, double offsetY, double deg){
-		//double rads = 2  * Math.PI * (deg + Phase);
 	    double rads = 2  * Math.PI * (deg);
 		this.y = (int)(Math.sin(rads) * wideY + offsetY);
 	}
@@ -59,12 +54,6 @@ class visualNode {
 		return this.y + diameter/2;
 	}
 }
-
-class visualNodeComparator implements Comparator<visualNode> {
-    public int compare(visualNode nodeFirst, visualNode nodeSecond) {
-        return Double.compare(nodeFirst.actualNode.h, nodeSecond.actualNode.h);
-    }
-} 
 
 
 public class visualGraph extends Component implements MouseListener, MouseMotionListener{ 
@@ -123,11 +112,9 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 	public void constructGraph(){
 		Queue<visualNode> openQueue = new LinkedList<visualNode>();
 		Set<visualNode> closedList = new HashSet<visualNode>();
-		visualNode currentNode;
+		visualNode currentNode = null;
 		// HardCoded stuff here
 		double shouldBeAwayDistance = 100;
-		currentNode = null;
-		double startDeg = 0;
 		double maxX=0, maxY=0, minX=heightAndWidth/2, minY=heightAndWidth/2;
 		
 		visualNodes.clear();
@@ -144,7 +131,6 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 	        if (currentNode.actualNode.h == 0.0) {
 	        	currentNode.x = heightAndWidth/2;
 	        	currentNode.y = heightAndWidth/2;
-	        	currentNode.Phase = 0;
 	        	openQueue.add(currentNode);
 	        	minX = currentNode.x;
 	        	minY = currentNode.y;
@@ -175,7 +161,6 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 		while (!openQueue.isEmpty()) {
 			currentNode = openQueue.poll();
 			closedList.add(currentNode);
-			startDeg = currentNode.Phase;
 			if (currentNode.x > maxX){
 				maxX = currentNode.x;
 			}
@@ -203,7 +188,6 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 			    	positionedProperly = true;
 				    currentNeighbor.calcX(wideX, currentNode.x, firstDeg/divisions);
 				    currentNeighbor.calcY(wideY, currentNode.y, firstDeg/divisions);
-				    currentNeighbor.Phase = firstDeg/divisions + 0.5;
 				    for (visualNode otherNode: closedList){
 				    	
 				    	double d = Math.sqrt(Math.pow(otherNode.x - currentNeighbor.x, 2)+Math.pow(otherNode.y - currentNeighbor.y, 2));
@@ -229,16 +213,10 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 			   
 			}
 		}
-		//heightAndWidth = 2 * ( maxX > maxY ? (int)maxX : (int)maxY ) ;
-		//Center the graph as good as possible
-		//Move inside towards the center the nodes that are outside 
-		//
+
 		double polX = (minX >= 0 ? 0 : -minX);
 		double polY = (minY >= 0 ? 0 : -minY);;
-		System.out.println("MX"+minX);
-    	System.out.println("MY"+minY);
-		System.out.println("PX"+polX);
-    	System.out.println("PY"+polY);
+		
 		heightAndWidth = 2 * ( maxX-minX > maxX-minY ? (int)(maxX-minX) : (int)(maxY-minY) ) ;
 		polX += Math.abs((minX+(maxX-minX)/2)-(heightAndWidth/2));
 		polY += Math.abs((minY+(maxY-minY)/2)-(heightAndWidth/2));
@@ -247,8 +225,8 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 			visualNode s = visualNodes.get(n);
 			s.x += polX;
 			s.y += polY;
-			System.out.println("X"+s.x);
-	    	System.out.println("Y"+s.y );
+			//System.out.println("X"+s.x);
+	    	//System.out.println("Y"+s.y );
 
 	    }
 
@@ -277,11 +255,7 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 	    g.fillRect(0, 0, heightAndWidth, heightAndWidth);
 	    
 		if (!createImage){
-			if (draggedOffsetX != 0 && draggedOffsetY != 0){
-				g.drawImage(image, (int)draggedOffsetX, (int)draggedOffsetY, heightAndWidth, heightAndWidth, null);
-				return;
-			}
-			g.drawImage(image, (int)newPosX, (int)newPosY, heightAndWidth, heightAndWidth, null);
+			g.drawImage(image, (int)(newPosX+draggedOffsetX), (int)(newPosY+draggedOffsetY), heightAndWidth, heightAndWidth, null);
 			return;
 		}
 
@@ -313,8 +287,10 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 	public void mouseDragged(MouseEvent arg0) {
 		// TODO Auto-generated method stub
 		Point point = arg0.getPoint();
+		
 		draggedOffsetX = point.x - clickedX;
 		draggedOffsetY = point.y - clickedY;
+		
 		repaint();
 	}
 	
@@ -330,10 +306,12 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 	@Override
 	public void mouseReleased(MouseEvent arg0) {
 		// TODO Auto-generated method stub
-		newPosX += draggedOffsetX;
-	    newPosY += draggedOffsetY;
-	    draggedOffsetX = 0;
-	    draggedOffsetY = 0;
+		Point point = arg0.getPoint();
+		draggedOffsetX = 0;
+		draggedOffsetY = 0;
+		newPosX += (point.x - clickedX);
+		newPosY += (point.y - clickedY);
+		
 	    repaint();
 	} 
 
