@@ -236,7 +236,7 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 	
 	public void softRepaint() {
 		System.out.println("SOFT");
-		image = new BufferedImage(imageHeight, imageWidth, BufferedImage.TYPE_INT_ARGB);
+		image = new BufferedImage(Math.abs(imageHeight), Math.abs(imageWidth), BufferedImage.TYPE_INT_ARGB);
 		Graphics g = image.getGraphics();
 		setSize(imageHeight, imageWidth);
 
@@ -269,6 +269,7 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
         		g.setColor(Color.magenta);
         	}
 			
+			
 			g.drawLine(visualNodes.get(e.node1).getCenterX(circleDiameter),
 					visualNodes.get(e.node1).getCenterY(circleDiameter),
 					visualNodes.get(e.node2).getCenterX(circleDiameter),
@@ -279,6 +280,7 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 			visualNode s = visualNodes.get(n);
 			g.setColor(s.actualNode.nodeColor);
 			g.fillOval(s.x, s.y, circleDiameter, circleDiameter); 
+			System.out.println("X:"+s.x+"Y:"+s.y);
 			g.drawString(s.actualNode.label, s.x, s.y);
 	    }
 		
