@@ -216,7 +216,7 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 
 		double polX = (minX >= 0 ? 0 : -minX);
 		double polY = (minY >= 0 ? 0 : -minY);;
-		
+		// I think i might have this two confused
 		imageHeight = 2 * (int)(maxX);
 		imageWidth = 2 * (int)(maxY) ;
 		//System.out.println("H"+imageHeight+"W"+imageWidth);
