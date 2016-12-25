@@ -217,17 +217,25 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 		double polX = (minX >= 0 ? 0 : -minX);
 		double polY = (minY >= 0 ? 0 : -minY);;
 		
-		imageHeight = 2 * (int)(maxX-minX);
-		imageWidth = 2 * (int)(maxY-minY) ;
+		imageHeight = 2 * (int)(maxX);
+		imageWidth = 2 * (int)(maxY) ;
 		//System.out.println("H"+imageHeight+"W"+imageWidth);
 		polX += Math.abs((minX+(maxX-minX)/2)-(heightAndWidth/2));
 		polY += Math.abs((minY+(maxY-minY)/2)-(heightAndWidth/2));
-
+		
+		//System.out.println("IX:"+imageHeight+"IY:"+imageWidth);
+		//System.out.println("PX:"+polX+"PY:"+polY);
+		
+		
+		
 		for (Node n : visualNodes.keySet()) {
 			visualNode s = visualNodes.get(n);
+			//System.out.println("BPX:"+s.x+"BPY:"+s.y);
 			s.x += polX;
 			s.y += polY;
+			//System.out.println("APX:"+s.x+"APY:"+s.y);
 	    }
+	    
 
 		resizeComponents();
 		softRepaint();
@@ -276,11 +284,12 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 					visualNodes.get(e.node2).getCenterY(circleDiameter));
 
 		}
+		System.out.println("IX:"+imageHeight+"IY:"+imageWidth);
 		for (Node n : visualNodes.keySet()) {
 			visualNode s = visualNodes.get(n);
 			g.setColor(s.actualNode.nodeColor);
 			g.fillOval(s.x, s.y, circleDiameter, circleDiameter); 
-			System.out.println("X:"+s.x+"Y:"+s.y);
+			//System.out.println("X:"+s.x+"Y:"+s.y);
 			g.drawString(s.actualNode.label, s.x, s.y);
 	    }
 		
