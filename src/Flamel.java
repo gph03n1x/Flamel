@@ -5,6 +5,8 @@ import javax.swing.JProgressBar;
 import java.awt.Panel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
+
 import javax.swing.JLabel;
 import java.awt.GridLayout;
 import javax.swing.JComboBox;
@@ -22,6 +24,7 @@ public class Flamel {
 
 	private JFrame frame;
 	private JTextField textField;
+	public static HashMap<String, visualGraph> tabbedGraphs = new HashMap<String, visualGraph>();
 
 	/*
 	 * Launch the application.
@@ -50,6 +53,7 @@ public class Flamel {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
+		// TODO: make it go windowed fullscreen.
 		frame = new JFrame();
 		frame.setBounds(100, 100, 1000, 700);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -108,30 +112,34 @@ public class Flamel {
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setBounds(156, 0, 224, 629);
 		frame.getContentPane().add(tabbedPane);
-		
-		visualGraph canvasPanel = new visualGraph();
-		tabbedPane.addTab("Graph", null, canvasPanel, null);
-		
-		canvasPanel.addReferences(frame, controlPanel, tabbedPane);
-		
-		JTextPane textPane = new JTextPane();
-		tabbedPane.addTab("Command window", null, textPane, null);
-		
+
+
 		JFileChooser fileDialog = new JFileChooser("graphs/");
+		// TODO: switching tab should change startNodesList and endNodesList
+		
 		graphreader.addActionListener(new ActionListener() {
 	    	@Override
 	    	public void actionPerformed(ActionEvent e) {
+	    		
 	    		int returnVal = fileDialog.showOpenDialog(frame);
 	    		if (returnVal == JFileChooser.APPROVE_OPTION) {
-	    			canvasPanel.readGraph(fileDialog.getSelectedFile().getPath());
-	    			
-	    			startNodesList.removeAllElements();
+	    			visualGraph newCanvasPanel;
+	    			if (tabbedGraphs.containsKey(fileDialog.getSelectedFile().getName())) {
+	    				newCanvasPanel = tabbedGraphs.get(fileDialog.getSelectedFile().getName());
+	    			} else {
+	    				newCanvasPanel = new visualGraph();
+		    			tabbedPane.addTab(fileDialog.getSelectedFile().getName(), null, newCanvasPanel, null);
+			    		newCanvasPanel.addReferences(frame, controlPanel, tabbedPane);
+			    		tabbedGraphs.put(fileDialog.getSelectedFile().getName(), newCanvasPanel);
+	    			}
+	    			newCanvasPanel.readGraph(fileDialog.getSelectedFile().getPath());
+		    		startNodesList.removeAllElements();
 	    			endNodesList.removeAllElements();
-	    			for (String nodeLabel :canvasPanel.graph.graph.keySet()) {
+	    			for (String nodeLabel :newCanvasPanel.graph.graph.keySet()) {
 	    				startNodesList.addElement(nodeLabel);
 		    			endNodesList.addElement(nodeLabel);
 	    			}
-	    			canvasPanel.constructGraph();
+	    			newCanvasPanel.constructGraph();
 	    			
 	            }   
 	    	}
@@ -139,9 +147,10 @@ public class Flamel {
 		btnCreatePath.addActionListener(new ActionListener() {
 	    	@Override
 	    	public void actionPerformed(ActionEvent e) {
+	    		System.out.println(tabbedPane.getTitleAt(tabbedPane.getSelectedIndex()));
+	    		visualGraph canvasPanel = tabbedGraphs.get(tabbedPane.getTitleAt(tabbedPane.getSelectedIndex()));
 	    		canvasPanel.doSearch(startPoint.getSelectedItem().toString(), endPoint.getSelectedItem().toString());
 	    		System.out.println("COLORED");
-	    		canvasPanel.softRepaint();
 	    	}
 	    });
 		

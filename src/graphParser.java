@@ -3,6 +3,9 @@ import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 
@@ -44,14 +47,26 @@ class Node {
 public class graphParser {
 	public HashMap<String, Node> graph = new HashMap<String, Node>();
 	public HashMap<String, Double> heuristic = new HashMap<String, Double>();
+	public String sha1String;
+	public String graphFilename;
+	
+	public void getHash(String fileContents) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+		MessageDigest digest = MessageDigest.getInstance("SHA-1");
+		digest.update(fileContents.getBytes("utf8"));
+		byte[] digestBytes = digest.digest();
+		sha1String = javax.xml.bind.DatatypeConverter.printHexBinary(digestBytes);
+	}
 	
 	public void readGraph(String graphFile){
 		try {
+			this.graphFilename = graphFile;
 			FileInputStream fstream = new FileInputStream(graphFile);
 			DataInputStream in = new DataInputStream(fstream);
 			BufferedReader br = new BufferedReader(new InputStreamReader(in));
-			String strLine;
+			String strLine, content="";
+			
 			while ((strLine = br.readLine()) != null) {
+				content += strLine;
 				if (strLine.charAt(0) == '#')
 					continue;
 				String[] parts = strLine.split(" ");
@@ -93,6 +108,7 @@ public class graphParser {
 			br.close();
 			in.close();
 			fstream.close();
+			getHash(content);
 		} catch (Exception e) {//Catch exception if any
 			System.err.println("Error: " + e.getMessage());
 		}

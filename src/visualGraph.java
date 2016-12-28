@@ -15,7 +15,6 @@ import java.util.Set;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
-import javax.swing.JTextPane;
 
 
 class visualEdge {
@@ -59,6 +58,9 @@ class visualNode {
 
 public class visualGraph extends Component implements MouseListener, MouseMotionListener{ 
 	private static final long serialVersionUID = 8533078139841015261L;
+	
+	//public static HashMap<String, String> graphImages = new HashMap<String, String>();
+	
 	public static HashMap<Node, visualNode> visualNodes = new HashMap<Node, visualNode>();
 	public static ArrayList<visualEdge> visualEdges = new ArrayList<visualEdge>();
 	public graphParser graph;
@@ -86,7 +88,6 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 		this.frame = frame;
 		this.controlPanel = controlPanel;
 		this.tabbedPane = tabbedPane;
-		
 		this.resizeComponents();
 	}
 	
@@ -97,6 +98,8 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 		getSe.setHeuristics(graph.heuristic);
 		getSe.setOptions(true, true);
 		getSe.lookForPath(start, end);
+		softRepaint();
+		
 		//this.textPanel.setText(getSe.lookForPath(start, end));
 	}
 	
@@ -115,6 +118,7 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 	}
 
 	public void constructGraph(){
+		
 		Queue<visualNode> openQueue = new LinkedList<visualNode>();
 		Set<visualNode> closedList = new HashSet<visualNode>();
 		visualNode currentNode = null;
@@ -243,7 +247,6 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 	}
 	
 	public void softRepaint() {
-		System.out.println("SOFT");
 		image = new BufferedImage(Math.abs(imageHeight), Math.abs(imageWidth), BufferedImage.TYPE_INT_ARGB);
 		Graphics g = image.getGraphics();
 		setSize(imageHeight, imageWidth);
@@ -251,9 +254,11 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 		createImage=true;
 		this.paint(g);
 		try {
-			ImageIO.write(image, "png", new File("images/test.png"));
+			ImageIO.write(image, "png", new File("images/"+graph.sha1String+".png"));
+			System.out.println("Image created: images/"+graph.sha1String+".png");
 		} catch (IOException ex) { }
 		createImage=false;
+		
 		setSize(heightAndWidth, heightAndWidth);
 		repaint();
 	}
