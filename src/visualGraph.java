@@ -27,6 +27,8 @@ class visualEdge {
 class visualNode {
 	Node actualNode;
 	int x, y;
+	double radsX, radsY;
+	
 	
 	public void moveX(double totalOffsetX){
 		this.x += totalOffsetX;
@@ -37,13 +39,13 @@ class visualNode {
 	}
 	
 	public void calcX(double wideX, double offsetX, double deg){
-		double rads = 2  * Math.PI * (deg);
-		this.x = (int)(Math.cos(rads) * wideX + offsetX);
+		radsX = 2  * Math.PI * (deg);
+		this.x = (int)(Math.cos(radsX) * wideX + offsetX);
 	}
 	
 	public void calcY(double wideY, double offsetY, double deg){
-	    double rads = 2  * Math.PI * (deg);
-		this.y = (int)(Math.sin(rads) * wideY + offsetY);
+		radsY = 2  * Math.PI * (deg);
+		this.y = (int)(Math.sin(radsY) * wideY + offsetY);
 	}
 	
 	public int getCenterX(int diameter){
@@ -72,7 +74,6 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 	int circleDiameter = 10;
 	int imageHeight, imageWidth;
 	
-	
 	BufferedImage image;
 	JFrame frame;
 	Panel controlPanel;
@@ -81,7 +82,6 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 	public visualGraph(){ 
 		addMouseListener(this);
 		addMouseMotionListener(this);
-		
 	} 
 	
 	public void addReferences(JFrame frame, Panel controlPanel, JTabbedPane tabbedPane) {
@@ -140,7 +140,7 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 	        	currentNode.x = heightAndWidth/2;
 	        	currentNode.y = heightAndWidth/2;
 	        	openQueue.add(currentNode);
-	        	minX = currentNode.x;
+	        	minX = currentNode.x; // This is wrong.
 	        	minY = currentNode.y;
 	        //} else if (rand.nextInt(100) + 1 <= 35){
 	        //	currentNode.nodeNumberId = rand.nextInt(currentNode.nodeCount) + 1;
@@ -180,7 +180,8 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 			double firstDeg = 0;
 			double divisions = currentNode.actualNode.costs.size()+1;
 			for (Node neighbor: currentNode.actualNode.costs.keySet()){ 
-				double wideX=80, wideY=80;
+				double wideX=80;
+				double wideY=80;
 				firstDeg +=1;
 			    visualNode currentNeighbor = visualNodes.get(neighbor);
 			   
@@ -222,10 +223,10 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 		double polY = (minY >= 0 ? 0 : -minY);;
 		// I think i might have this two confused
 		imageHeight = 2 * (int)(maxX);
-		imageWidth = 2 * (int)(maxY) ;
+		imageWidth = 2 * (int)(maxY);
 		//System.out.println("H"+imageHeight+"W"+imageWidth);
-		polX += Math.abs((minX+(maxX-minX)/2)-(heightAndWidth/2));
-		polY += Math.abs((minY+(maxY-minY)/2)-(heightAndWidth/2));
+		polX = Math.abs((minX+(maxX-minX)/2)-(heightAndWidth/2));
+		polY = Math.abs((minY+(maxY-minY)/2)-(heightAndWidth/2));
 		
 		//System.out.println("IX:"+imageHeight+"IY:"+imageWidth);
 		//System.out.println("PX:"+polX+"PY:"+polY);
@@ -235,8 +236,17 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 		for (Node n : visualNodes.keySet()) {
 			visualNode s = visualNodes.get(n);
 			//System.out.println("BPX:"+s.x+"BPY:"+s.y);
-			s.x += polX;
-			s.y += polY;
+			if (s.x > heightAndWidth/2){
+				s.x -= polX;
+			} else {
+				s.x += polX;
+			}
+			if (s.y > heightAndWidth/2){
+				s.y -= polY;
+			} else {
+				s.y += polY;
+			}
+			
 			//System.out.println("APX:"+s.x+"APY:"+s.y);
 	    }
 	    
@@ -263,11 +273,9 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 		repaint();
 	}
 	
-	
 	public void paint(Graphics g){ 
 		g.setColor(Color.white);
-	    
-	    
+
 		if (!createImage){
 			g.fillRect(0, 0, heightAndWidth, heightAndWidth);
 			g.drawImage(image, (int)(newPosX+draggedOffsetX), (int)(newPosY+draggedOffsetY), imageHeight, imageWidth, null);
@@ -278,6 +286,7 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 		g.fillRect(0, 0, imageHeight, imageWidth);
 		for (visualEdge e: visualEdges){
 			g.setColor(Color.black);
+			
 			if (e.node1.nodeColor != Color.blue && e.node2.nodeColor != Color.blue){
         		g.setColor(Color.magenta);
         	}
@@ -353,7 +362,5 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 		// TODO Auto-generated method stub
 		
 	}
-
-
 	
 }

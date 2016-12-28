@@ -1,24 +1,24 @@
 import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
-import javax.swing.JProgressBar;
 import java.awt.Panel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
-
 import javax.swing.JLabel;
 import java.awt.GridLayout;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
-import javax.swing.JTextPane;
 import javax.swing.JTextField;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import java.awt.Color;
 import javax.swing.JMenu;
 import javax.swing.JTabbedPane;
-import javax.swing.JSplitPane;
+
 
 public class Flamel {
 
@@ -68,7 +68,7 @@ public class Flamel {
 		Panel controlPanel = new Panel();
 		controlPanel.setBounds(0, 0, 150, 350);
 		frame.getContentPane().add(controlPanel);
-		controlPanel.setLayout(new GridLayout(10, 0, 0, 0));
+		controlPanel.setLayout(new GridLayout(11, 0, 0, 0));
 		
 		DefaultComboBoxModel<String> startNodesList = new DefaultComboBoxModel<String>();
 		DefaultComboBoxModel<String> endNodesList = new DefaultComboBoxModel<String>();
@@ -109,6 +109,10 @@ public class Flamel {
 		btnCreatePath.setBackground(Color.GREEN);
 		controlPanel.add(btnCreatePath);
 		
+		JButton btnRegenerate = new JButton("Regenerate");
+		btnRegenerate.setBackground(Color.magenta);
+		controlPanel.add(btnRegenerate);
+		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setBounds(156, 0, 224, 629);
 		frame.getContentPane().add(tabbedPane);
@@ -140,6 +144,7 @@ public class Flamel {
 		    			endNodesList.addElement(nodeLabel);
 	    			}
 	    			newCanvasPanel.constructGraph();
+	    			tabbedPane.setSelectedIndex(tabbedPane.indexOfTab(fileDialog.getSelectedFile().getName()));
 	    			
 	            }   
 	    	}
@@ -153,6 +158,31 @@ public class Flamel {
 	    		System.out.println("COLORED");
 	    	}
 	    });
+		
+		btnRegenerate.addActionListener(new ActionListener() {
+	    	@Override
+	    	public void actionPerformed(ActionEvent e) {
+	    		visualGraph canvasPanel = tabbedGraphs.get(tabbedPane.getTitleAt(tabbedPane.getSelectedIndex()));
+	    		canvasPanel.readGraph(canvasPanel.graph.graphFilename);
+	    		canvasPanel.constructGraph();
+	    		
+	    	}
+	    });
+		ChangeListener changeListener = new ChangeListener() {
+			public void stateChanged(ChangeEvent changeEvent) {
+				if (tabbedGraphs.containsKey(tabbedPane.getTitleAt(tabbedPane.getSelectedIndex()))){
+					visualGraph newCanvasPanel  = tabbedGraphs.get(tabbedPane.getTitleAt(tabbedPane.getSelectedIndex()));
+
+		    		startNodesList.removeAllElements();
+	    			endNodesList.removeAllElements();
+	    			for (String nodeLabel :newCanvasPanel.graph.graph.keySet()) {
+	    				startNodesList.addElement(nodeLabel);
+		    			endNodesList.addElement(nodeLabel);
+	    			}
+				}
+			}
+		};
+	    tabbedPane.addChangeListener(changeListener);
 		
 	}
 }
