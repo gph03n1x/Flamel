@@ -57,6 +57,9 @@ public class Flamel {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 1000, 700);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setExtendedState(JFrame.MAXIMIZED_BOTH); 
+		//frame.setUndecorated(true);
+		frame.setVisible(true);
 		
 		JMenuBar menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
@@ -68,20 +71,18 @@ public class Flamel {
 		Panel controlPanel = new Panel();
 		controlPanel.setBounds(0, 0, 150, 350);
 		frame.getContentPane().add(controlPanel);
-		controlPanel.setLayout(new GridLayout(11, 0, 0, 0));
+		controlPanel.setLayout(new GridLayout(13, 0, 0, 0));
 		
 		DefaultComboBoxModel<String> startNodesList = new DefaultComboBoxModel<String>();
 		DefaultComboBoxModel<String> endNodesList = new DefaultComboBoxModel<String>();
+		DefaultComboBoxModel<String> searchAlgList = new DefaultComboBoxModel<String>();
+		DefaultComboBoxModel<String> visualAlgList = new DefaultComboBoxModel<String>();
 		
 		JButton graphreader = new JButton("Open Graph");
-		
 		controlPanel.add(graphreader);
-		
-		
 		
 		JLabel lblStartingPoint = new JLabel("Starting Node: ");
 		controlPanel.add(lblStartingPoint);
-		
 		
 		JComboBox<String> startPoint = new JComboBox<String>(startNodesList);
 		controlPanel.add(startPoint);
@@ -92,10 +93,19 @@ public class Flamel {
 		JComboBox<String> endPoint = new JComboBox<String>(endNodesList);
 		controlPanel.add(endPoint);
 		
+		JLabel lblVisualMethod = new JLabel("Visual Method");
+		controlPanel.add(lblVisualMethod);
+		
+		JComboBox<String> visualMethod = new JComboBox<String>(visualAlgList);
+		controlPanel.add(visualMethod);
+		visualAlgList.addElement("Branching");
+		visualAlgList.addElement("Orbiting");
+		//visualMethod.setSelectedIndex(1);
+		
 		JLabel lblSearchMethod = new JLabel("Search Method");
 		controlPanel.add(lblSearchMethod);
 		
-		JComboBox searchMethod = new JComboBox();
+		JComboBox<String> searchMethod = new JComboBox<String>(searchAlgList);
 		controlPanel.add(searchMethod);
 		
 		JLabel Options = new JLabel("Options");
@@ -133,13 +143,20 @@ public class Flamel {
 	    			} else {
 	    				newCanvasPanel = new visualGraph();
 		    			tabbedPane.addTab(fileDialog.getSelectedFile().getName(), null, newCanvasPanel, null);
-			    		newCanvasPanel.addReferences(frame, controlPanel, tabbedPane);
+			    		newCanvasPanel.addReferences(tabbedPane);
 			    		tabbedGraphs.put(fileDialog.getSelectedFile().getName(), newCanvasPanel);
 	    			}
+	    			if (visualMethod.getSelectedIndex() == 0) {
+	    				newCanvasPanel.useBranching();
+	    			} else {
+	    				newCanvasPanel.useOrbiting();
+	    			}
+	    			
 	    			newCanvasPanel.readGraph(fileDialog.getSelectedFile().getPath());
 		    		startNodesList.removeAllElements();
 	    			endNodesList.removeAllElements();
-	    			for (String nodeLabel :newCanvasPanel.graph.graph.keySet()) {
+	    			graphParser graph = newCanvasPanel.graphPlacement.graph;
+	    			for (String nodeLabel : graph.graph.keySet()) {
 	    				startNodesList.addElement(nodeLabel);
 		    			endNodesList.addElement(nodeLabel);
 	    			}
@@ -162,8 +179,15 @@ public class Flamel {
 		btnRegenerate.addActionListener(new ActionListener() {
 	    	@Override
 	    	public void actionPerformed(ActionEvent e) {
+	    		
 	    		visualGraph canvasPanel = tabbedGraphs.get(tabbedPane.getTitleAt(tabbedPane.getSelectedIndex()));
-	    		canvasPanel.readGraph(canvasPanel.graph.graphFilename);
+	    		String tempPath = canvasPanel.graphPlacement.graph.graphFilename;
+	    		if (visualMethod.getSelectedIndex() == 0) {
+    				canvasPanel.useBranching();
+    			} else {
+    				canvasPanel.useOrbiting();
+    			}
+	    		canvasPanel.readGraph(tempPath);
 	    		canvasPanel.constructGraph();
 	    		
 	    	}
@@ -175,7 +199,8 @@ public class Flamel {
 
 		    		startNodesList.removeAllElements();
 	    			endNodesList.removeAllElements();
-	    			for (String nodeLabel :newCanvasPanel.graph.graph.keySet()) {
+	    			graphParser graph = newCanvasPanel.graphPlacement.graph;
+	    			for (String nodeLabel : graph.graph.keySet()) {
 	    				startNodesList.addElement(nodeLabel);
 		    			endNodesList.addElement(nodeLabel);
 	    			}
