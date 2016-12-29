@@ -1,10 +1,17 @@
 
 public class orbiting extends graphPlacement{
+	double wideX, wideY;
+
+	public orbiting() {
+		super();
+		wideX = Double.valueOf(cfg.get("orbitingWideX"));
+		wideY = Double.valueOf(cfg.get("orbitingWideY"));
+	}
+	
 	public void graphCreate() {
 		visualNodes.clear();
 		visualEdges.clear();
-		double wideX = 200;
-		double wideY = 200;
+		
 		double count = 1;
 		double nodeCount = graph.graph.size();
 		for (String name: graph.graph.keySet()){

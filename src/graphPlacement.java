@@ -53,8 +53,15 @@ public abstract class graphPlacement {
 	double offsetX=heightAndWidth/2;
 	double offsetY=heightAndWidth/2;
 	int imageHeight=heightAndWidth, imageWidth=heightAndWidth;
+	configParser cfg;
+		
+	public graphPlacement() {
+		cfg = new configParser();
+	}
+	
 	
 	abstract void graphCreate();
+
 	
 
 }

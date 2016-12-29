@@ -58,8 +58,8 @@ public class Flamel {
 		frame.setBounds(100, 100, 1000, 700);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setExtendedState(JFrame.MAXIMIZED_BOTH); 
-		//frame.setUndecorated(true);
 		frame.setVisible(true);
+		configParser cfg = new configParser();
 		
 		JMenuBar menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
@@ -107,7 +107,10 @@ public class Flamel {
 		
 		JComboBox<String> searchMethod = new JComboBox<String>(searchAlgList);
 		controlPanel.add(searchMethod);
-		searchAlgList.addElement("A*");
+		
+		for (String part: cfg.get("algorithms").split(",")){
+			searchAlgList.addElement(part);
+		}
 		
 		JLabel Options = new JLabel("Options");
 		controlPanel.add(Options);
@@ -142,9 +145,8 @@ public class Flamel {
 	    			if (tabbedGraphs.containsKey(fileDialog.getSelectedFile().getName())) {
 	    				newCanvasPanel = tabbedGraphs.get(fileDialog.getSelectedFile().getName());
 	    			} else {
-	    				newCanvasPanel = new visualGraph();
+	    				newCanvasPanel = new visualGraph(tabbedPane);
 		    			tabbedPane.addTab(fileDialog.getSelectedFile().getName(), null, newCanvasPanel, null);
-			    		newCanvasPanel.addReferences(tabbedPane);
 			    		tabbedGraphs.put(fileDialog.getSelectedFile().getName(), newCanvasPanel);
 	    			}
 	    			if (visualMethod.getSelectedIndex() == 0) {
@@ -182,7 +184,7 @@ public class Flamel {
 	    	public void actionPerformed(ActionEvent e) {
 	    		
 	    		visualGraph canvasPanel = tabbedGraphs.get(tabbedPane.getTitleAt(tabbedPane.getSelectedIndex()));
-	    		String tempPath = canvasPanel.graphPlacement.graph.graphFilename;
+	    		String tempPath = canvasPanel.currentFile;
 	    		if (visualMethod.getSelectedIndex() == 0) {
     				canvasPanel.useBranching();
     			} else {

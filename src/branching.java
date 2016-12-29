@@ -4,12 +4,19 @@ import java.util.Queue;
 import java.util.Set;
 
 public class branching extends graphPlacement{
+	double shouldBeAwayDistance;
+	
+	public branching(){
+		super();
+		shouldBeAwayDistance = Double.valueOf(cfg.get("shouldBeAwayDistance"));
+	}
+	
+	
 	public void graphCreate() {
 		Queue<visualNode> openQueue = new LinkedList<visualNode>();
 		Set<visualNode> closedList = new HashSet<visualNode>();
 		visualNode currentNode = null;
 		// HardCoded stuff here
-		double shouldBeAwayDistance = 100;
 		double maxX=0, maxY=0, minX=heightAndWidth/2, minY=heightAndWidth/2;
 		
 		visualNodes.clear();
@@ -66,8 +73,8 @@ public class branching extends graphPlacement{
 			double firstDeg = 0;
 			double divisions = currentNode.actualNode.costs.size()+1;
 			for (Node neighbor: currentNode.actualNode.costs.keySet()){ 
-				double wideX=80;
-				double wideY=80;
+				double wideX=Double.valueOf(cfg.get("branchingWideX"));
+				double wideY=Double.valueOf(cfg.get("branchingWideY"));
 				firstDeg +=1;
 			    visualNode currentNeighbor = visualNodes.get(neighbor);
 			   

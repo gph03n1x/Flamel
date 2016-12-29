@@ -46,7 +46,6 @@ public class graphParser {
 	public HashMap<String, Node> graph = new HashMap<String, Node>();
 	public HashMap<String, Double> heuristic = new HashMap<String, Double>();
 	public String sha1String;
-	public String graphFilename;
 	
 	public String getHash(String fileContents) throws NoSuchAlgorithmException, UnsupportedEncodingException {
 		/*
@@ -61,7 +60,6 @@ public class graphParser {
 	
 	public void readGraph(String graphFile){
 		try (BufferedReader br = new BufferedReader(new FileReader(graphFile))) {
-			this.graphFilename = graphFile;
 			String strLine, content="";
 			
 			while ((strLine = br.readLine()) != null) {

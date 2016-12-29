@@ -14,13 +14,11 @@ import javax.swing.JTabbedPane;
 public class visualGraph extends Component implements MouseListener, MouseMotionListener{ 
 	private static final long serialVersionUID = 8533078139841015261L;
 	
-	//public static HashMap<String, String> graphImages = new HashMap<String, String>();
-	
 	public HashMap<Node, visualNode> visualNodes = new HashMap<Node, visualNode>();
 	public ArrayList<visualEdge> visualEdges = new ArrayList<visualEdge>();
 	public graphParser graph;
 	public graphPlacement graphPlacement;
-	//public String currentFile;
+	public String currentFile;
 	double clickedX, clickedY, draggedOffsetX=0, draggedOffsetY=0;
 	double newPosX=0, newPosY=0;
 	boolean createImage=false;
@@ -30,19 +28,19 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 	
 	BufferedImage image;
 	JTabbedPane tabbedPane;
+	configParser cfg;
 	
-	public visualGraph(){ 
+	
+	public visualGraph(JTabbedPane tabbedPane){ 
+		cfg = new configParser();
+		circleDiameter = Integer.valueOf(cfg.get("circle-diameter"));
+		this.tabbedPane = tabbedPane;
 		addMouseListener(this);
 		addMouseMotionListener(this);
+		this.resizeComponents();
 	} 
 	
 
-	public void addReferences(JTabbedPane tabbedPane) {
-		System.out.println("REF CALLED");
-		this.tabbedPane = tabbedPane;
-		this.resizeComponents();
-	}
-	
 	public void doSearch(String start, String end) {
 		//Class<?> getSe = Class.forName("Astar");
 		Astar getSe = new Astar();
@@ -71,9 +69,10 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 		
 	}
 	
-	public void readGraph(String File){
+	public void readGraph(String FileName){
+		currentFile = FileName;
 		graphPlacement.graph = new graphParser();
-		graphPlacement.graph.readGraph(File);
+		graphPlacement.graph.readGraph(FileName);
 	}
 
 	public void constructGraph(){
