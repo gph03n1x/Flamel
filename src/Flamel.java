@@ -107,6 +107,7 @@ public class Flamel {
 		
 		JComboBox<String> searchMethod = new JComboBox<String>(searchAlgList);
 		controlPanel.add(searchMethod);
+		searchAlgList.addElement("A*");
 		
 		JLabel Options = new JLabel("Options");
 		controlPanel.add(Options);

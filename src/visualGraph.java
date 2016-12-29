@@ -38,6 +38,7 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 	
 
 	public void addReferences(JTabbedPane tabbedPane) {
+		System.out.println("REF CALLED");
 		this.tabbedPane = tabbedPane;
 		this.resizeComponents();
 	}
@@ -64,6 +65,7 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 	
 	
 	public void resizeComponents() {
+		System.out.println("RESIZE CALLED");
 		this.tabbedPane.setSize(heightAndWidth, heightAndWidth);
 		this.setSize(heightAndWidth, heightAndWidth);
 		

@@ -1,8 +1,6 @@
 import java.awt.Color;
 import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
+import java.io.FileReader;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -50,19 +48,20 @@ public class graphParser {
 	public String sha1String;
 	public String graphFilename;
 	
-	public void getHash(String fileContents) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+	public String getHash(String fileContents) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+		/*
+		 * Returns a sha1 hash of a string input.
+		 *  
+		 */
 		MessageDigest digest = MessageDigest.getInstance("SHA-1");
 		digest.update(fileContents.getBytes("utf8"));
 		byte[] digestBytes = digest.digest();
-		sha1String = javax.xml.bind.DatatypeConverter.printHexBinary(digestBytes);
+		return javax.xml.bind.DatatypeConverter.printHexBinary(digestBytes);
 	}
 	
 	public void readGraph(String graphFile){
-		try {
+		try (BufferedReader br = new BufferedReader(new FileReader(graphFile))) {
 			this.graphFilename = graphFile;
-			FileInputStream fstream = new FileInputStream(graphFile);
-			DataInputStream in = new DataInputStream(fstream);
-			BufferedReader br = new BufferedReader(new InputStreamReader(in));
 			String strLine, content="";
 			
 			while ((strLine = br.readLine()) != null) {
@@ -105,10 +104,8 @@ public class graphParser {
 					System.out.println("Line :\""+strLine+"\" is incomplete");
 				}
 			}
-			br.close();
-			in.close();
-			fstream.close();
-			getHash(content);
+
+			sha1String = getHash(content);
 		} catch (Exception e) {//Catch exception if any
 			System.err.println("Error: " + e.getMessage());
 		}
