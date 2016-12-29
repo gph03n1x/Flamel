@@ -5,6 +5,8 @@ import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import javax.imageio.ImageIO;
@@ -41,16 +43,35 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 	} 
 	
 
-	public void doSearch(String start, String end) {
-		//Class<?> getSe = Class.forName("Astar");
-		Astar getSe = new Astar();
-		getSe.setGraph(graphPlacement.graph.graph);
-		getSe.setHeuristics(graphPlacement.graph.heuristic);
-		getSe.setOptions(true, true);
-		getSe.lookForPath(start, end);
-		softRepaint();
-		
-		//this.textPanel.setText(getSe.lookForPath(start, end));
+	public void doSearch(String searchAlg, String start, String end) {
+		try {
+			Class<?> getC = Class.forName(searchAlg);
+			Object getO = (Object)getC.newInstance();
+			// TODO: Not the best way to do this.
+			Method[] methods = getC.getMethods();
+	
+			for (Method method_ : methods) {
+				if (method_.getName() == "Invoke") {
+					method_.invoke(getO, graphPlacement.graph.graph, graphPlacement.graph.heuristic,
+							start, end);
+					break;
+				}
+			}
+			softRepaint();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+
 	}
 	
 	public void useBranching() {
@@ -63,7 +84,6 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 	
 	
 	public void resizeComponents() {
-		System.out.println("RESIZE CALLED");
 		this.tabbedPane.setSize(heightAndWidth, heightAndWidth);
 		this.setSize(heightAndWidth, heightAndWidth);
 		
@@ -95,7 +115,7 @@ public class visualGraph extends Component implements MouseListener, MouseMotion
 		this.paint(g);
 		try {
 			ImageIO.write(image, "png", new File("images/"+graphPlacement.graph.sha1String+".png"));
-			System.out.println("Image created: "+graphPlacement.graph.sha1String+".png");
+			//System.out.println("Image created: "+graphPlacement.graph.sha1String+".png");
 		} catch (IOException ex) { }
 		createImage=false;
 		

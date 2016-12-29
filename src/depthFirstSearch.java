@@ -1,8 +1,17 @@
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Stack;
 
 public class depthFirstSearch extends pathFinding {
+	
+	public void Invoke(HashMap<String, Node> graph, HashMap<String, Double> heuristic,
+			String start, String end) {
+		this.setGraph(graph);
+		this.setHeuristics(heuristic);
+		this.lookForPath(start, end);
+		this.work();
+	}
 	
 	public String work() {
 		Set<Node> closedList = new HashSet<Node>();

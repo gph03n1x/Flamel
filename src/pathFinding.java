@@ -7,6 +7,8 @@ public abstract class pathFinding {
 	public HashMap<Node, Node> path = new HashMap<Node, Node>();
 	String start, end;
 	
+	
+	
 	public void setGraph(HashMap<String, Node> graph){
 		this.graph = graph;
 	}

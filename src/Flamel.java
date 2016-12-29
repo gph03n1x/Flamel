@@ -174,8 +174,8 @@ public class Flamel {
 	    	public void actionPerformed(ActionEvent e) {
 	    		System.out.println(tabbedPane.getTitleAt(tabbedPane.getSelectedIndex()));
 	    		visualGraph canvasPanel = tabbedGraphs.get(tabbedPane.getTitleAt(tabbedPane.getSelectedIndex()));
-	    		canvasPanel.doSearch(startPoint.getSelectedItem().toString(), endPoint.getSelectedItem().toString());
-	    		System.out.println("COLORED");
+	    		canvasPanel.doSearch(searchMethod.getSelectedItem().toString(),
+	    				startPoint.getSelectedItem().toString(), endPoint.getSelectedItem().toString());
 	    	}
 	    });
 		

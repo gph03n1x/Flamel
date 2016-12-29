@@ -1,9 +1,18 @@
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
 
 public class breadthFirstSearch extends pathFinding{
+	
+	public void Invoke(HashMap<String, Node> graph, HashMap<String, Double> heuristic,
+			String start, String end) {
+		this.setGraph(graph);
+		this.setHeuristics(heuristic);
+		this.lookForPath(start, end);
+		this.work();
+	}
 	
 	// work work work work work
 	public String work() {
